@@ -43,8 +43,9 @@ namespace MaverickBankk.Repositories
         {
             var foundedLoan = await _mavericksBankContext.Loans
                  .Include(l => l.Customers)
-                .ThenInclude(c => c.Accounts)
+                .ThenInclude(c => c!.Accounts)
                 .FirstOrDefaultAsync(loan => loan.LoanID == key);
+            
             if (foundedLoan == null)
             {
                 return null;

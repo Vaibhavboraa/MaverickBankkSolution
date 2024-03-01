@@ -175,6 +175,11 @@ namespace MaverickBankk.Controllers
                 _logger.LogError($"Error creating customer: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
+            catch(ValidationNotFoundException ex)
+            {
+                _logger.LogError(ex.Message);
+                return NotFound( ex.Message);
+            }
         }
 
     }

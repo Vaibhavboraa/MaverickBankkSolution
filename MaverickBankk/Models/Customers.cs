@@ -7,21 +7,21 @@ namespace MaverickBankk.Models
     {
         [Key]
         public int CustomerID { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public DateTime DOB { get; set; }
         public int Age { get; set; }
         public long PhoneNumber { get; set; }
-        public string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
         public long? AadharNumber { get; set; }
-        public string PANNumber { get; set; }
-        public string Gender { get; set; }
-        public string Email { get; set; }
+        public string PANNumber { get; set; } = string.Empty;
+        public string Gender { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         [ForeignKey("Email")]
         public Validation? Validation { get; set; }
 
-        public ICollection<Accounts> Accounts { get; set; }
-        public ICollection<Beneficiaries> Beneficiaries { get; set; }
-        public ICollection<Loans> Loans { get; set; }
+        public ICollection<Accounts>? Accounts { get; set; }
+        public ICollection<Beneficiaries>? Beneficiaries { get; set; }
+        public ICollection<Loans>? Loans { get; set; }
 
         public Customers(int customerID, string name, DateTime dOB, int age, long phoneNumber, string address, long? aadharNumber, string pANNumber, string gender, string email)
         {
@@ -43,7 +43,9 @@ namespace MaverickBankk.Models
 
         public bool Equals(Customers? other)
         {
-            return CustomerID == other.CustomerID;
+            return CustomerID == other?.CustomerID;
         }
+
+
     }
 }

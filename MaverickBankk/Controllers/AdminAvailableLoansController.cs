@@ -17,6 +17,32 @@ using Microsoft.Extensions.Logging;
 
 namespace MaverickBankk.Controllers
 {
+
+    //[ApiController]
+    //[Route("api/[controller]")]
+    //public class AdminAvailableLoansController : ControllerBase
+    //{
+    //    private readonly IAdminAvailableLoansService _adminAvailableLoansService;
+
+    //    public AdminAvailableLoansController(IAdminAvailableLoansService adminAvailableLoansService)
+    //    {
+    //        _adminAvailableLoansService = adminAvailableLoansService;
+    //    }
+
+    //    [HttpPost("add")]
+    //    public async Task<IActionResult> AddLoan([FromBody] AvailableLoans loan)
+    //    {
+    //        try
+    //        {
+    //            var addedLoan = await _adminAvailableLoansService.AddLoan(loan);
+    //            return Ok(addedLoan);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            return StatusCode(500, $"Internal server error: {ex.Message}");
+    //        }
+    //    }
+    //}
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("ReactPolicy")]
@@ -63,7 +89,7 @@ namespace MaverickBankk.Controllers
             try
             {
                 return await _adminAvailableLoansService.AddLoan(loan);
-               
+
 
             }
             catch (Exception ex)

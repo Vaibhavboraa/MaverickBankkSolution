@@ -28,7 +28,10 @@ namespace MaverickBankk.Services
             {
                 throw new EmployeeNotFoundException($"Employee with ID {employeeId} not found.");
             }
-
+            if(employee.Email==null)
+            {
+                throw new EmployeeNotFoundException($"Employee with ID {employeeId} not found.");
+            }
             var validation = await _validationRepository.Get(employee.Email);
             if (validation == null)
             {
@@ -40,10 +43,35 @@ namespace MaverickBankk.Services
             return employee;
         }
 
+        //public async Task<BankEmployees?> DeactivateEmployee(int employeeId)
+        //{
+        //    var employee = await _bankEmployeesRepository.Get(employeeId);
+        //    if (employee == null)
+        //    {
+        //        throw new EmployeeNotFoundException($"Employee with ID {employeeId} not found.");
+        //    }
+
+        //    var validation = await _validationRepository.Get(employee.Email);
+        //    if (validation == null)
+        //    {
+        //        throw new ValidationNotFoundException($"Validation for employee with ID {employeeId} not found.");
+        //    }
+
+        //    validation.Status = "deactivated";
+        //    await _validationRepository.Update(validation);
+
+        //    _logger.LogInformation($"Employee with ID {employeeId} deactivated.");
+        //    return employee;
+        //}
+
         public async Task<BankEmployees?> DeactivateEmployee(int employeeId)
         {
             var employee = await _bankEmployeesRepository.Get(employeeId);
             if (employee == null)
+            {
+                throw new EmployeeNotFoundException($"Employee with ID {employeeId} not found.");
+            }
+            if (employee.Email == null)
             {
                 throw new EmployeeNotFoundException($"Employee with ID {employeeId} not found.");
             }
@@ -54,12 +82,22 @@ namespace MaverickBankk.Services
                 throw new ValidationNotFoundException($"Validation for employee with ID {employeeId} not found.");
             }
 
-            validation.Status = "deactivated";
-            await _validationRepository.Update(validation);
+            if (employee.Email != null)
+            {
+                validation.Status = "deactivated";
+                await _validationRepository.Update(validation);
 
-            _logger.LogInformation($"Employee with ID {employeeId} deactivated.");
-            return employee;
+                _logger.LogInformation($"Employee with ID {employeeId} deactivated.");
+                return employee;
+            }
+
+            throw new InvalidOperationException($"Email is null for employee with ID {employeeId}.");
         }
+
+
+
+
+
 
         public async Task<List<BankEmployees>?> GetAllEmployees()
         {

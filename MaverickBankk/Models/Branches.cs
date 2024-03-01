@@ -22,7 +22,7 @@ namespace MaverickBankk.Models
 
         public bool Equals(Branches? other)
         {
-            return IFSCNumber == other.IFSCNumber;
+            return IFSCNumber == other?.IFSCNumber;
         }
     }
 }

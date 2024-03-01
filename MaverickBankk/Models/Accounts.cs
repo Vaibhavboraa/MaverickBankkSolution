@@ -8,17 +8,17 @@ namespace MaverickBankk.Models
         [Key]
         public long AccountNumber { get; set; }
         public double Balance { get; set; }
-        public string AccountType { get; set; }
-        public string Status { get; set; }
-        public string IFSC { get; set; }
+        public string? AccountType { get; set; }
+        public string? Status { get; set; }
+        public string? IFSC { get; set; }
         [ForeignKey("IFSC")]
         public Branches? Branches { get; set; }
         public int CustomerID { get; set; }
         [ForeignKey("CustomerID")]
         public Customers? Customers { get; set; }
 
-        public ICollection<Transactions> SourceTransaction { get; set; }
-        public ICollection<Transactions> Transfers { get; set; }
+        public ICollection<Transactions>? SourceTransaction { get; set; }
+        public ICollection<Transactions>? Transfers { get; set; }
 
         public Accounts()
         {

@@ -23,10 +23,10 @@ namespace MaverickBankk.Context
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure Accounts entity
+           
             modelBuilder.Entity<Accounts>()
                 .Property(a => a.AccountNumber)
-                .ValueGeneratedOnAdd(); // This indicates that the value is generated on add
+                .ValueGeneratedOnAdd(); 
 
             modelBuilder.Entity<Transactions>()
                .HasOne(t => t.Accounts)

@@ -31,7 +31,6 @@ namespace MaverickBankk.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("AccountNumber"), 1L, 1);
 
                     b.Property<string>("AccountType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Balance")
@@ -41,11 +40,9 @@ namespace MaverickBankk.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("IFSC")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AccountNumber");
@@ -66,21 +63,19 @@ namespace MaverickBankk.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminID"), 1L, 1);
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AdminID");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("Admin");
                 });
@@ -100,15 +95,12 @@ namespace MaverickBankk.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("LoanType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Purpose")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Tenure")
@@ -128,25 +120,22 @@ namespace MaverickBankk.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"), 1L, 1);
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Position")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("EmployeeID");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("BankEmployees");
                 });
@@ -360,11 +349,9 @@ namespace MaverickBankk.Migrations
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Email");
@@ -382,9 +369,7 @@ namespace MaverickBankk.Migrations
 
                     b.HasOne("MaverickBankk.Models.Branches", "Branches")
                         .WithMany()
-                        .HasForeignKey("IFSC")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IFSC");
 
                     b.Navigation("Branches");
 
@@ -395,9 +380,7 @@ namespace MaverickBankk.Migrations
                 {
                     b.HasOne("MaverickBankk.Models.Validation", "Validation")
                         .WithOne("Admin")
-                        .HasForeignKey("MaverickBankk.Models.Admin", "Email")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MaverickBankk.Models.Admin", "Email");
 
                     b.Navigation("Validation");
                 });
@@ -406,9 +389,7 @@ namespace MaverickBankk.Migrations
                 {
                     b.HasOne("MaverickBankk.Models.Validation", "Validation")
                         .WithOne("BankEmployees")
-                        .HasForeignKey("MaverickBankk.Models.BankEmployees", "Email")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MaverickBankk.Models.BankEmployees", "Email");
 
                     b.Navigation("Validation");
                 });

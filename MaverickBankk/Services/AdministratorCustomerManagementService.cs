@@ -152,7 +152,10 @@ namespace MaverickBankk.Services
 
 
                 var addedValidation = await _validationRepository.Add(newValidation);
-
+                if(addedValidation.Email==null)
+                {
+                    throw new ValidationNotFoundException($"Email not found.");
+                }
 
                 newCustomer.Email = addedValidation.Email;
 

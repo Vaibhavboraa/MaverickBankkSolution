@@ -42,6 +42,8 @@ namespace MaverickBankk.Controllers
             }
 
         }
+
+
         [Route("get employee by id")]
         [HttpGet]
         public async Task<ActionResult<BankEmployees>> GetEmployee(int employeeId)
@@ -59,6 +61,9 @@ namespace MaverickBankk.Controllers
             }
 
         }
+
+
+
         [Route("Activate Employee")]
         [HttpPost]
         public async Task<ActionResult<BankEmployees>> ActivateEmployee(int employeeId)
@@ -81,6 +86,9 @@ namespace MaverickBankk.Controllers
             }
 
         }
+
+
+
         [Route("Deactivate Employee")]
         [HttpPost]
         public async Task<ActionResult<BankEmployees>> DeactivateEmployee(int employeeId)
@@ -103,6 +111,8 @@ namespace MaverickBankk.Controllers
             }
 
         }
+
+
         [Route("Register Bank Employee")]
         [HttpPost]
         public async Task<ActionResult<BankEmployees>> CreateBankEmployee(RegisterBankEmployeeDTO employeeDTO)
@@ -119,6 +129,11 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Error creating bank employee");
             }
         }
+
+     
+
+
+
         [Route("Update Bank Employee")]
         [HttpPut]
         public async Task<IActionResult> UpdateEmployee(int employeeId, UpdateBankEmployeeByAdminDTO updateDTO)

@@ -7,10 +7,10 @@ namespace MaverickBankk.Models
     {
         [Key]
         public int EmployeeID { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Position { get; set; }
-        public string Phone { get; set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Position { get; set; }
+        public string? Phone { get; set; }
         [ForeignKey("Email")]
         public Validation? Validation { get; set; }
 
@@ -29,7 +29,7 @@ namespace MaverickBankk.Models
 
         public bool Equals(BankEmployees? other)
         {
-            return EmployeeID == other.EmployeeID;
+            return EmployeeID == other?.EmployeeID;
         }
     }
 }
