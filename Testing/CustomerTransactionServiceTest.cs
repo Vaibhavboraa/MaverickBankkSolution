@@ -1,4 +1,199 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MaverickBankk.Exceptions;
+using MaverickBankk.Interfaces;
+using MaverickBankk.Models;
+using MaverickBankk.Models.DTOs;
+using MaverickBankk.Services;
+using Microsoft.Extensions.Logging;
+using Moq;
+using NUnit.Framework;
+
+namespace Testing
+{
+    [TestFixture]
+    public class CustomerTransactionServiceTest
+    {
+        private Mock<IRepository<int, Transactions>> _mockTransactionsRepository;
+        private Mock<IRepository<long, Accounts>> _mockAccountsRepository;
+        private Mock<ILogger<CustomerTransactionService>> _mockLogger;
+        private CustomerTransactionService _customerTransactionService;
+
+        [SetUp]
+        public void Setup()
+        {
+            _mockTransactionsRepository = new Mock<IRepository<int, Transactions>>();
+            _mockAccountsRepository = new Mock<IRepository<long, Accounts>>();
+            _mockLogger = new Mock<ILogger<CustomerTransactionService>>();
+            _customerTransactionService = new CustomerTransactionService(
+                _mockLogger.Object,
+                _mockTransactionsRepository.Object,
+                _mockAccountsRepository.Object);
+        }
+
+        [Test]
+        public async Task Deposit_ValidData_AccountBalanceUpdated()
+        {
+            // Arrange
+            int customerId = 1;
+            var depositDTO = new DepositDTO { AccountNumber = 123, Amount = 500 };
+            var account = new Accounts { AccountNumber = 123, CustomerID = customerId, Status = "Active", Balance = 1000 };
+            _mockAccountsRepository.Setup(repo => repo.Get(depositDTO.AccountNumber)).ReturnsAsync(account);
+
+            // Act
+            await _customerTransactionService.Deposit(customerId, depositDTO);
+
+            // Assert
+            Assert.That(account.Balance, Is.EqualTo(1500));
+        }
+
+        [Test]
+        public async Task Deposit_InvalidAccount_NoChangesInBalance()
+        {
+            // Arrange
+            int customerId = 1;
+            var depositDTO = new DepositDTO { AccountNumber = 123, Amount = 500 };
+            var unused = _mockAccountsRepository.Setup(repo => repo.Get(depositDTO.AccountNumber)).ReturnsAsync((Accounts)null);
+
+            // Act
+            await _customerTransactionService.Deposit(customerId, depositDTO);
+
+            // Assert
+            _mockAccountsRepository.Verify(repo => repo.Update(It.IsAny<Accounts>()), Times.Never);
+        }
+
+        // Add similar test cases for other methods in CustomerTransactionService
+
+        [Test]
+        public async Task Withdraw_ValidData_AccountBalanceUpdated()
+        {
+            // Arrange
+            int customerId = 1;
+            var withdrawalDTO = new WithdrawalDTO { AccountNumber = 123, Amount = 500 };
+            var account = new Accounts { AccountNumber = 123, CustomerID = customerId, Status = "Active", Balance = 1000 };
+            _mockAccountsRepository.Setup(repo => repo.Get(withdrawalDTO.AccountNumber)).ReturnsAsync(account);
+
+            // Act
+            await _customerTransactionService.Withdraw(customerId, withdrawalDTO);
+
+            // Assert
+            Assert.That(account.Balance, Is.EqualTo(500));
+        }
+
+        [Test]
+        public async Task Withdraw_InvalidAccount_NoChangesInBalance()
+        {
+            // Arrange
+            int customerId = 1;
+            var withdrawalDTO = new WithdrawalDTO { AccountNumber = 123, Amount = 500 };
+            _mockAccountsRepository.Setup(repo => repo.Get(withdrawalDTO.AccountNumber)).ReturnsAsync((Accounts)null);
+
+            // Act
+            await _customerTransactionService.Withdraw(customerId, withdrawalDTO);
+
+            // Assert
+            _mockAccountsRepository.Verify(repo => repo.Update(It.IsAny<Accounts>()), Times.Never);
+        }
+
+    
+
+        [Test]
+        public async Task Transfer_ValidData_AccountBalancesUpdated()
+        {
+            // Arrange
+            int customerId = 1;
+            var transferDTO = new TransferDTO { SourceAccountNumber = 123, DestinationAccountNumber = 456, Amount = 500 };
+            var sourceAccount = new Accounts { AccountNumber = 123, CustomerID = customerId, Status = "Active", Balance = 1000 };
+            var destinationAccount = new Accounts { AccountNumber = 456, Status = "Active", Balance = 500 };
+            _mockAccountsRepository.Setup(repo => repo.Get(transferDTO.SourceAccountNumber)).ReturnsAsync(sourceAccount);
+            _mockAccountsRepository.Setup(repo => repo.Get(transferDTO.DestinationAccountNumber)).ReturnsAsync(destinationAccount);
+
+            // Act
+            await _customerTransactionService.Transfer(customerId, transferDTO);
+
+            // Assert
+            //Assert.AreEqual(500, sourceAccount.Balance);
+            Assert.That(destinationAccount.Balance, Is.EqualTo(1000));
+
+        }
+
+        [Test]
+        public async Task Transfer_InvalidSourceAccount_NoChangesInBalances()
+        {
+            // Arrange
+            int customerId = 1;
+            var transferDTO = new TransferDTO { SourceAccountNumber = 123, DestinationAccountNumber = 456, Amount = 500 };
+            _mockAccountsRepository.Setup(repo => repo.Get(transferDTO.SourceAccountNumber)).ReturnsAsync((Accounts)null);
+
+            // Act
+            await _customerTransactionService.Transfer(customerId, transferDTO);
+
+            // Assert
+            _mockAccountsRepository.Verify(repo => repo.Update(It.IsAny<Accounts>()), Times.Never);
+        }
+
+        // Add similar test cases for other methods in CustomerTransactionService
+
+    
+
+    
+
+       
+
+        [Test]
+        public async Task GetLastMonthTransactions_ValidAccountNumber_ReturnsTransactions()
+        {
+            // Arrange
+            long accountNumber = 123;
+            var transactions = new List<Transactions>
+            {
+                new Transactions { TransactionID = 1, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddMonths(-1).Date },
+                new Transactions { TransactionID = 2, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddMonths(-1).Date },
+                // Add more transactions
+            };
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
+
+            // Act
+            var result = await _customerTransactionService.GetLastMonthTransactions(accountNumber);
+
+            // Assert
+            CollectionAssert.AreEqual(transactions, result);
+        }
+
+      
+
+      
+        [Test]
+        public async Task GetTransactionsBetweenDates_ValidData_ReturnsTransactions()
+        {
+            // Arrange
+            long accountNumber = 123;
+            var startDate = DateTime.Now.AddMonths(-1);
+            var endDate = DateTime.Now;
+            var transactions = new List<Transactions>
+            {
+                new Transactions { TransactionID = 1, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-5).Date },
+                new Transactions { TransactionID = 2, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-10).Date },
+                // Add more transactions
+            };
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
+
+            // Act
+            var result = await _customerTransactionService.GetTransactionsBetweenDates(accountNumber, startDate, endDate);
+
+            // Assert
+            CollectionAssert.AreEqual(transactions, result);
+        }
+
+      
+
+        // Add similar test cases for other methods in CustomerTransactionService
+    }
+}
+
+
+
 
 //using MaverickBankk.Context;
 //using MaverickBankk.Exceptions;
@@ -124,7 +319,7 @@
 //            };
 
 //            // Act
-//            var result = await _transactionService.Transfer(transferDTO);
+//            var result = await _transactionService.Transfer(customerId,transferDTO);
 
 //            // Assert
 //            Assert.AreEqual("Transfer successful.", result);
@@ -189,7 +384,7 @@
 //                new Transactions { TransactionID = 8, SourceAccountNumber = accountNumber, Amount = 800, TransactionDate = DateTime.Now.AddDays(-8) },
 //                new Transactions { TransactionID = 9, SourceAccountNumber = accountNumber, Amount = 900, TransactionDate = DateTime.Now.AddDays(-9) },
 //                new Transactions { TransactionID = 10, SourceAccountNumber = accountNumber, Amount = 1000, TransactionDate = DateTime.Now.AddDays(-10) },
-//                new Transactions { TransactionID = 11, SourceAccountNumber = accountNumber, Amount = 1100, TransactionDate = DateTime.Now.AddDays(-11) } 
+//                new Transactions { TransactionID = 11, SourceAccountNumber = accountNumber, Amount = 1100, TransactionDate = DateTime.Now.AddDays(-11) }
 //            };
 
 //            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
@@ -206,7 +401,7 @@
 //        {
 //            // Arrange
 //            long accountNumber = 123456789;
-//            var transactions = new List<Transactions>(); 
+//            var transactions = new List<Transactions>();
 
 //            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
 

@@ -2,8 +2,8 @@
 
 namespace MaverickBankk.Exceptions
 {
-    [Serializable]
-    internal class AccountFetchException : Exception
+    [Serializable] 
+    public class AccountFetchException : Exception
     {
         public AccountFetchException()
         {

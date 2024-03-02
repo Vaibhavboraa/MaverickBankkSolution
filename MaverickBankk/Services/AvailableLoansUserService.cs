@@ -37,6 +37,9 @@ namespace MaverickBankk.Services
         public async Task<AvailableLoans?> GetLoanById(int loanId)
         {
             return await _availableLoansRepository.Get(loanId);
+
         }
+
+
     }
 }

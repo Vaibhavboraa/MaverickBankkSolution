@@ -35,6 +35,12 @@ namespace MaverickBankk.Services
             if (checkPasswordMatch)
             {
                 employee.Password = "";
+                //
+                if (myUser.UserType == null)
+                {
+                    throw new InvalidUserException("UserType is null");
+                }
+                employee.UserType = myUser.UserType;
                 employee.UserType = myUser.UserType;
                 employee.Token = await _tokenService.GenerateToken(employee);
                 return employee;
@@ -68,8 +74,13 @@ namespace MaverickBankk.Services
             myuser = await _validationRepository.Add(myuser);
             BankEmployees bankEmployees = new RegiterToBankEmployee(employee).GetBankEmployees();
             bankEmployees = await _employeeRepository.Add(bankEmployees);
+            if(myuser.Email==null)
+            {
+                throw new InvalidUserException("Invalid User");
+            }
             LoginUserDTO result = new LoginUserDTO
             {
+
                 Email = myuser.Email,
                 UserType = myuser.UserType,
             };

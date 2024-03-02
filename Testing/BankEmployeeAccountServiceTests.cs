@@ -15,7 +15,7 @@ namespace MaverickBankk.Services.Tests
     public class BankEmployeeAccountServiceTests
     {
         [Test]
-        public async Task GetCustomers()
+        public async Task GetCustomers_ReturnsSingleCustomer()
         {
             // Arrange
             var customerId = 1;
@@ -26,17 +26,24 @@ namespace MaverickBankk.Services.Tests
 
             var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
 
-            var service = new BankEmployeeAccountService(null, customerRepositoryMock.Object, loggerMock.Object);
+            var service = new BankEmployeeAccountService(
+                Mock.Of<IRepository<long, Accounts>>(),
+                customerRepositoryMock.Object,
+                loggerMock.Object);
 
             // Act
             var result = await service.GetCustomers(customerId);
 
             // Assert
-            Assert.AreEqual(expectedCustomer, result);
+            Assert.That(result, Is.EqualTo(expectedCustomer));
         }
 
+       
+
+
+
         [Test]
-        public async Task GetCustomersListasync()
+        public async Task GetCustomersList_ReturnsListOfCustomers()
         {
             // Arrange
             var expectedCustomers = new List<Customers>
@@ -50,17 +57,20 @@ namespace MaverickBankk.Services.Tests
 
             var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
 
-            var service = new BankEmployeeAccountService(null, customerRepositoryMock.Object, loggerMock.Object);
+            var service = new BankEmployeeAccountService(
+                Mock.Of<IRepository<long, Accounts>>(),
+                customerRepositoryMock.Object,
+                loggerMock.Object);
 
             // Act
             var result = await service.GetCustomersListasync();
 
             // Assert
-            Assert.AreEqual(expectedCustomers, result);
+            Assert.That(result, Is.EqualTo(expectedCustomers));
         }
 
         [Test]
-        public async Task ApproveAccountCreation()
+        public async Task ApproveAccountCreation_ReturnsTrue()
         {
             // Arrange
             var accountNumber = 123456789;
@@ -72,7 +82,10 @@ namespace MaverickBankk.Services.Tests
 
             var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
 
-            var service = new BankEmployeeAccountService(accountsRepositoryMock.Object, null, loggerMock.Object);
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
 
             // Act
             var result = await service.ApproveAccountCreation(accountNumber);
@@ -80,9 +93,15 @@ namespace MaverickBankk.Services.Tests
             // Assert
             Assert.IsTrue(result);
         }
+     
+
+
+
+
+
 
         [Test]
-        public async Task ApproveAccountDeletion()
+        public async Task ApproveAccountDeletion_ReturnsTrue()
         {
             // Arrange
             var accountNumber = 123456789;
@@ -94,7 +113,10 @@ namespace MaverickBankk.Services.Tests
 
             var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
 
-            var service = new BankEmployeeAccountService(accountsRepositoryMock.Object, null, loggerMock.Object);
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
 
             // Act
             var result = await service.ApproveAccountDeletion(accountNumber);
@@ -104,7 +126,7 @@ namespace MaverickBankk.Services.Tests
         }
 
         [Test]
-        public async Task GetPendingAccounts()
+        public async Task GetPendingAccounts_ReturnsListOfAccounts()
         {
             // Arrange
             var pendingAccounts = new List<Accounts>
@@ -118,17 +140,24 @@ namespace MaverickBankk.Services.Tests
 
             var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
 
-            var service = new BankEmployeeAccountService(accountsRepositoryMock.Object, null, loggerMock.Object);
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
 
             // Act
             var result = await service.GetPendingAccounts();
 
             // Assert
-            Assert.AreEqual(pendingAccounts, result);
+            Assert.That(result, Is.EqualTo(pendingAccounts));
         }
 
+
+
+
+
         [Test]
-        public async Task GetPendingDeletionAccounts()
+        public async Task GetPendingDeletionAccounts_ReturnsListOfAccounts()
         {
             // Arrange
             var pendingDeletionAccounts = new List<Accounts>
@@ -142,15 +171,17 @@ namespace MaverickBankk.Services.Tests
 
             var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
 
-            var service = new BankEmployeeAccountService(accountsRepositoryMock.Object, null, loggerMock.Object);
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
 
             // Act
             var result = await service.GetPendingDeletionAccounts();
 
             // Assert
-            Assert.AreEqual(pendingDeletionAccounts, result);
+            Assert.That(result, Is.EqualTo(pendingDeletionAccounts));
         }
 
-       
     }
 }

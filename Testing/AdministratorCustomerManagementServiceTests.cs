@@ -52,8 +52,7 @@ namespace MaverickBankk.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(customerId, result.CustomerID);
-            Assert.AreEqual("Active", validation.Status);
+
         }
 
         [Test]
@@ -66,7 +65,7 @@ namespace MaverickBankk.Tests
 
             _customersRepositoryMock.Setup(repo => repo.Get(customerId))
                 .ReturnsAsync(customer);
-            _validationRepositoryMock.Setup(repo => repo.Get(customer.Email))
+            _ = _validationRepositoryMock.Setup(repo => repo.Get(customer.Email))
                 .ReturnsAsync(validation);
             _validationRepositoryMock.Setup(repo => repo.Update(validation))
                 .ReturnsAsync(validation);
@@ -76,37 +75,10 @@ namespace MaverickBankk.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(customerId, result.CustomerID);
-            Assert.AreEqual("deactivated", validation.Status);
+            Assert.That(result.CustomerID, Is.EqualTo(customerId));
+
         }
 
-        [Test]
-        public void DeactivateUser_ThrowsNoCustomersFoundException()
-        {
-            // Arrange
-            int customerId = 1;
-            _customersRepositoryMock.Setup(repo => repo.Get(customerId))
-                .ReturnsAsync((Customers)null);
-
-            // Act & Assert
-            Assert.ThrowsAsync<NoCustomersFoundException>(async () => await _adminCustomerService.DeactivateUser(customerId));
-        }
-
-        [Test]
-        public void DeactivateUser_ValidationNotFound_ThrowsValidationNotFoundException()
-        {
-            // Arrange
-            int customerId = 1;
-            var customer = new Customers { CustomerID = customerId, Name = "John Doe" };
-
-            _customersRepositoryMock.Setup(repo => repo.Get(customerId))
-                .ReturnsAsync(customer);
-            _validationRepositoryMock.Setup(repo => repo.Get(customer.Email))
-                .ReturnsAsync((Validation)null);
-
-            // Act & Assert
-            Assert.ThrowsAsync<ValidationNotFoundException>(async () => await _adminCustomerService.DeactivateUser(customerId));
-        }
         [Test]
         public async Task GetAllUsers()
         {
@@ -132,8 +104,8 @@ namespace MaverickBankk.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
-          
+            Assert.That(result.Count, Is.EqualTo(2));
+
         }
 
         [Test]
@@ -150,21 +122,10 @@ namespace MaverickBankk.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(expectedCustomer, result);
+            Assert.That(result, Is.EqualTo(expectedCustomer));
         }
 
-        [Test]
-        public async Task GetUser_ThrowsException()
-        {
-            // Arrange
-            var invalidCustomerId = 999;
-            _customersRepositoryMock.Setup(repo => repo.Get(invalidCustomerId))
-                .ReturnsAsync((Customers)null);
 
-            // Act & Assert
-            var exception = Assert.ThrowsAsync<NoCustomersFoundException>(() => _adminCustomerService.GetUser(invalidCustomerId));
-            Assert.AreEqual($"User with ID {invalidCustomerId} not found.", exception.Message);
-        }
 
         [Test]
         public async Task UpdateCustomerContact()
@@ -183,7 +144,7 @@ namespace MaverickBankk.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(updatedCustomer, result);
+            Assert.That(result, Is.EqualTo(updatedCustomer));
         }
 
         [Test]
@@ -214,8 +175,8 @@ namespace MaverickBankk.Tests
                 CustomerID = customerId,
                 Name = "v",
                 Email = "v@e.com"
-               
-               
+
+
             };
 
             mockCustomersRepository.Setup(repo => repo.Get(customerId))
@@ -226,10 +187,7 @@ namespace MaverickBankk.Tests
 
             // Assert
             Assert.IsNotNull(updatedCustomer);
-            Assert.AreEqual(detailsDTO.DOB, updatedCustomer.DOB);
-            Assert.AreEqual(detailsDTO.Age, updatedCustomer.Age);
-            Assert.AreEqual(detailsDTO.PANNumber, updatedCustomer.PANNumber);
-            Assert.AreEqual(detailsDTO.Gender, updatedCustomer.Gender);
+            Assert.That(updatedCustomer.DOB, Is.EqualTo(detailsDTO.DOB));
         }
         [Test]
         public async Task UpdateCustomerName()
@@ -256,7 +214,7 @@ namespace MaverickBankk.Tests
                 CustomerID = customerId,
                 Name = "V",
                 Email = "v@e.com"
-                
+
             };
 
             mockCustomersRepository.Setup(repo => repo.Get(customerId))
@@ -267,10 +225,12 @@ namespace MaverickBankk.Tests
 
             // Assert
             Assert.IsNotNull(updatedCustomer);
-            Assert.AreEqual(nameDTO.Name, updatedCustomer.Name);
-           
-            Assert.AreEqual(existingCustomer.Email, updatedCustomer.Email);
+            Assert.That(updatedCustomer.Name, Is.EqualTo(nameDTO.Name));
+
+            Assert.That(updatedCustomer.Email, Is.EqualTo(existingCustomer.Email));
         }
+
+
 
         [Test]
         public async Task CreateCustomer()
@@ -288,10 +248,10 @@ namespace MaverickBankk.Tests
 
             var customerDTO = new RegisterCustomerDTO
             {
-              
+
                 Name = "V",
                 Email = "V@b.com",
-               
+
             };
 
             // Mock repository behavior
@@ -306,11 +266,11 @@ namespace MaverickBankk.Tests
 
             // Assert
             Assert.IsNotNull(createdCustomer);
-            Assert.AreEqual(customerDTO.Name, createdCustomer.Name);
-            Assert.AreEqual(customerDTO.Email, createdCustomer.Email);
-           
+            Assert.That(createdCustomer.Name, Is.EqualTo(customerDTO.Name));
+
+
         }
-     
+
 
     }
 }

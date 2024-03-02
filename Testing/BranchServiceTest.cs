@@ -26,7 +26,7 @@ namespace Testing
             context = new MavericksBankContext(options);
         }
         [Test, Order(1)]
-        public async Task GetAllBranchesExceptionTest()
+        public void GetAllBranchesExceptionTest()
         {
             // Arrange
             var mockBranchesRepositoryLogger = new Mock<ILogger<BranchesRepository>>();
@@ -61,11 +61,11 @@ namespace Testing
             var addedBranch = await branchesService.AddBranch(branchToAdd);
 
             // Assert
-            Assert.AreEqual(branchToAdd, addedBranch);
+            Assert.That(addedBranch, Is.EqualTo(branchToAdd));
         }
 
         [Test, Order(3)]
-        public async Task DeleteBranchTest()
+        public void DeleteBranchTest()
         {
             // Arrange
             var mockBranchesRepository = new Mock<IRepository<string, Branches>>();
@@ -106,10 +106,10 @@ namespace Testing
             var actualBranches = await branchesService.GetAllBranches();
 
             // Assert: 
-            Assert.AreEqual(expectedBranches.Count, actualBranches.Count);
+            Assert.That(actualBranches.Count, Is.EqualTo(expectedBranches.Count));
             for (int i = 0; i < expectedBranches.Count; i++)
             {
-                Assert.AreEqual(expectedBranches[i], actualBranches[i]);
+                Assert.That(actualBranches[i], Is.EqualTo(expectedBranches[i]));
             }
         }
         [Test, Order(5)]
@@ -133,15 +133,38 @@ namespace Testing
             var actualBranch = await branchesService.GetBranch(branchKeyToRetrieve);
 
             // Assert
-            Assert.AreEqual(expectedBranch, actualBranch);
+            Assert.That(actualBranch, Is.EqualTo(expectedBranch));
         }
 
 
 
 
 
+        [Test, Order(6)]
+        public async Task UpdateBranchNameTest()
+        {
+            // Arrange
+            var mockBranchesRepository = new Mock<IRepository<string, Branches>>();
+            var mockLogger = new Mock<ILogger<BranchesService>>();
+            IBranchesAdminService branchesService = new BranchesService(mockBranchesRepository.Object, mockLogger.Object);
 
+            var updateBranchNameDTO = new UpdateBranchNameDTO
+            {
+                IFSCNumber = "123456",
+                BranchName = "NewBranchName"
+            };
 
+            var existingBranch = new Branches("OldBranchName", "Location", 1);
+
+            mockBranchesRepository.Setup(repo => repo.Get(updateBranchNameDTO.IFSCNumber)).ReturnsAsync(existingBranch);
+            mockBranchesRepository.Setup(repo => repo.Update(It.IsAny<Branches>())).ReturnsAsync(existingBranch);
+
+            // Act
+            var updatedBranch = await branchesService.UpdateBranchName(updateBranchNameDTO);
+
+            // Assert
+            Assert.That(updatedBranch.BranchName, Is.EqualTo(updateBranchNameDTO.BranchName));
+        }
 
 
 

@@ -33,7 +33,7 @@ namespace MaverickBankk.Controllers
             {
                 var employees = await _bankEmployeeService.GetAllEmployees();
 
-                return employees;
+                return Ok(employees);
             }
             catch (EmployeeNotFoundException ex)
             {
@@ -52,7 +52,7 @@ namespace MaverickBankk.Controllers
             {
                 var employee = await _bankEmployeeService.GetEmployee(employeeId);
 
-                return employee;
+                return Ok(employee);
             }
             catch (EmployeeNotFoundException ex)
             {
@@ -72,7 +72,7 @@ namespace MaverickBankk.Controllers
             {
                 var activatedEmployee = await _bankEmployeeService.ActivateEmployee(employeeId);
 
-                return activatedEmployee;
+                return Ok($"User with ID {employeeId} activated successfully");
             }
             catch (EmployeeNotFoundException ex)
             {
@@ -97,7 +97,7 @@ namespace MaverickBankk.Controllers
             {
                 var deactivatedEmployee = await _bankEmployeeService.DeactivateEmployee(employeeId);
 
-                return deactivatedEmployee;
+                return Ok($"User with ID {employeeId} deactivated successfully");
             }
             catch (EmployeeNotFoundException ex)
             {
@@ -121,7 +121,7 @@ namespace MaverickBankk.Controllers
             {
                 var addedBankEmployee = await _bankEmployeeService.CreateBankEmployee(employeeDTO);
 
-                return addedBankEmployee;
+                return Ok("Bank Employee Created Successfully");
             }
             catch (BankEmployeeCreationException ex)
             {

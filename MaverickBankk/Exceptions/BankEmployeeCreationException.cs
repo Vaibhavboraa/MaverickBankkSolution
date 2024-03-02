@@ -3,7 +3,7 @@
 namespace MaverickBankk.Exceptions
 {
     [Serializable]
-    internal class BankEmployeeCreationException : Exception
+    public class BankEmployeeCreationException : Exception
     {
         public BankEmployeeCreationException()
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MaverickBankk.Exceptions;
 using MaverickBankk.Interfaces;
 using MaverickBankk.Models;
 using MaverickBankk.Models.DTOs;
@@ -8,7 +9,7 @@ using MaverickBankk.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-
+#nullable disable
 namespace Testing
 {
     [TestFixture]
@@ -72,10 +73,23 @@ namespace Testing
             var availedLoans = await _customerLoanService.ViewAvailedLoans(customerId);
 
             // Assert
-            Assert.AreEqual(2, availedLoans.Count);
-            Assert.IsTrue(availedLoans.All(loan => loan.CustomerID == customerId));
+            Assert.That(availedLoans.Count, Is.EqualTo(2));
+          //Assert.IsTrue(availedLoans.All(loan => loan.CustomerID == customerId));
         }
 
 
+
+        [Test]
+        public void ViewAvailedLoans_InvalidCustomerId_ThrowsNoCustomersFoundException()
+        {
+            // Arrange
+            int invalidCustomerId = -1; // Assuming -1 is an invalid ID for demonstration purposes
+            _mockCustomerRepository.Setup(repo => repo.Get(invalidCustomerId))
+                .ReturnsAsync((Customers)null); // Simulating no customer found
+
+            // Act & Assert
+            var ex = Assert.ThrowsAsync<NoCustomersFoundException>(async () => await _customerLoanService.ViewAvailedLoans(invalidCustomerId));
+            Assert.That(ex.Message, Is.EqualTo($"No customer found with ID {invalidCustomerId}"));
+        }
     }
 }

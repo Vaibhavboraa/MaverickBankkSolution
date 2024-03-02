@@ -77,9 +77,16 @@ namespace MaverickBankk.Services
                 myuser = await _validationRepository.Add(myuser);
                 Customers customers = new RegisterToCustomer(user).GetCustomers();
                 customers = await _customerRepository.Add(customers);
+                if (myuser == null || myuser.Email == null || myuser.UserType == null)
+                {
+                    throw new ValidationNotFoundException("No Email found");
+                }
                 LoginUserDTO result = new LoginUserDTO
                 {
+                    
+
                     Email = myuser.Email,
+
                     UserType = myuser.UserType,
                 };
                 _logger.LogInformation($"User {user.Email} registered successfully.");
@@ -121,6 +128,8 @@ namespace MaverickBankk.Services
                 throw;
             }
         }
+
+
         /// <summary>
         /// Method to Change the name of customer
         /// </summary>
@@ -194,8 +203,13 @@ namespace MaverickBankk.Services
                 {
                     throw new NoCustomersFoundException($"No customer found with ID {id}");
                 }
-
+               
                 var result = await _customerRepository.Delete(id);
+                //
+                if (result == null)
+                {
+                    throw new NoCustomersFoundException($"No customer found with ID {id}");
+                }
                 return result;
             }
             catch (Exception ex)

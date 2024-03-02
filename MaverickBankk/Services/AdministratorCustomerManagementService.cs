@@ -3,6 +3,7 @@ using MaverickBankk.Mappers;
 using MaverickBankk.Models.DTOs;
 using MaverickBankk.Models;
 using MaverickBankk.Exceptions;
+using Microsoft.AspNetCore.Routing;
 
 namespace MaverickBankk.Services
 {
@@ -42,6 +43,8 @@ namespace MaverickBankk.Services
             return user;
 
         }
+
+
 
 
         public async Task<Customers?> DeactivateUser(int customerId)
@@ -139,6 +142,9 @@ namespace MaverickBankk.Services
             return customer;
 
         }
+
+      
+
 
         public async Task<Customers?> CreateCustomer(RegisterCustomerDTO customerDTO)
         {

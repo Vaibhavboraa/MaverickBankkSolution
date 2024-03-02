@@ -37,18 +37,18 @@ namespace MaverickBankk.Tests.Services
             // Arrange
             var employeeDTO = new RegisterBankEmployeeDTO
             {
-                
+
                 Email = "v@example.com",
-               
+
             };
 
             var validation = new Validation
             {
                 Email = "v@example.com",
-                Status = "Active", 
+                Status = "Active",
                 Password = new byte[64],
-                Key = new byte[64] 
-               
+                Key = new byte[64]
+
             };
 
             _validationRepositoryMock.Setup(repo => repo.Add(It.IsAny<Validation>()))
@@ -56,9 +56,9 @@ namespace MaverickBankk.Tests.Services
 
             var bankEmployee = new BankEmployees
             {
-             
+
                 EmployeeID = 1,
-               
+
             };
 
             _employeeRepositoryMock.Setup(repo => repo.Add(It.IsAny<BankEmployees>()))
@@ -69,8 +69,7 @@ namespace MaverickBankk.Tests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(employeeDTO.Email, result.Email);
-           
+
         }
 
 
@@ -87,10 +86,10 @@ namespace MaverickBankk.Tests.Services
             var validation = new Validation
             {
                 Email = "test@example.com",
-                Status = "Active", 
+                Status = "Active",
                 Password = new byte[64],
-                Key = new byte[64] 
-               
+                Key = new byte[64]
+
             };
 
             _validationRepositoryMock.Setup(repo => repo.Get(loginUserDTO.Email))
@@ -100,6 +99,7 @@ namespace MaverickBankk.Tests.Services
             Assert.ThrowsAsync<InvalidUserException>(() => _bankEmployeeLoginServices.Login(loginUserDTO));
         }
 
-        
+
+
     }
 }

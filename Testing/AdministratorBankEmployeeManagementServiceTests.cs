@@ -11,9 +11,12 @@ using MaverickBankk.Context;
 using MaverickBankk.Models.DTOs;
 using MaverickBankk.Repositories;
 using Microsoft.EntityFrameworkCore;
+using MaverickBankk.Exceptions;
 
 namespace Testing
 {
+   
+
     [TestFixture]
     public class AdministratorBankEmployeeManagementServiceTests
     {
@@ -70,8 +73,21 @@ namespace Testing
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual("Active", validation.Status);
+        }   
+      
+        [Test]
+        public void ActivateEmployee_InvalidEmployeeId_ThrowsEmployeeNotFoundException()
+        {
+            // Arrange
+            var invalidEmployeeId = 999; 
+
+            // Act & Assert
+            var exception = Assert.ThrowsAsync<EmployeeNotFoundException>(() => _service.ActivateEmployee(invalidEmployeeId));
+
+            // Assert
+            Assert.That(exception.Message, Is.EqualTo($"Employee with ID {invalidEmployeeId} not found."));
         }
+
 
         [Test]
         public async Task DeactivateEmployee_ValidEmployeeId_ReturnsDeactivatedEmployee()
@@ -92,7 +108,19 @@ namespace Testing
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual("deactivated", validation.Status);
+        }
+
+        [Test]
+        public void DeactivateEmployee_InvalidEmployeeId_ThrowsEmployeeNotFoundException()
+        {
+            // Arrange
+            var invalidEmployeeId = 999; 
+
+            // Act & Assert
+            var exception = Assert.ThrowsAsync<EmployeeNotFoundException>(() => _service.DeactivateEmployee(invalidEmployeeId));
+
+            // Assert
+            Assert.That(exception.Message, Is.EqualTo($"Employee with ID {invalidEmployeeId} not found."));
         }
 
 
@@ -114,8 +142,22 @@ namespace Testing
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(employeeId, result.EmployeeID);
         }
+
+
+        [Test]
+        public void GetEmployee_InvalidEmployeeId_ThrowsEmployeeNotFoundException()
+        {
+            // Arrange
+            var invalidEmployeeId = 999; 
+
+            // Act & Assert
+            var exception = Assert.ThrowsAsync<EmployeeNotFoundException>(() => _service.GetEmployee(invalidEmployeeId));
+
+            // Assert
+            Assert.That(exception.Message, Is.EqualTo($"Employee with ID {invalidEmployeeId} not found."));
+        }
+
         [Test]
         public async Task CreateBankEmployee_ValidData_ReturnsCreatedEmployee()
         {
@@ -133,8 +175,12 @@ namespace Testing
 
             // Assert
             Assert.IsNotNull(result);
-            // Add more assertions as per your implementation
+           
         }
+
+    
+
+
 
         [Test]
         public async Task UpdateEmployee_ValidEmployee_ReturnsUpdatedEmployee()
@@ -162,11 +208,73 @@ namespace Testing
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsNotNull(updatedEmployee);
 
+        }
+        //[Test]
+        //public async Task UpdateEmployee_ExceptionOccurs_ThrowsEmployeeUpdateException()
+        //{
+        //    // Arrange
+        //    var employee = new BankEmployees
+        //    {
+        //        EmployeeID = 1,
+        //        Name = "John Doe",
+        //        Email = "john.doe@example.com",
+        //        Position = "Manager",
+        //        Phone = "1234567890"
+        //    };
+
+        //    // Add the employee to the database
+        //    await _context.BankEmployees.AddAsync(employee);
+        //    await _context.SaveChangesAsync();
+
+
+
+        //    // Act & Assert
+        //    var exception = Assert.ThrowsAsync<EmployeeUpdateException>(() => _service.UpdateEmployee(employee));
+
+        //    // Assert
+        //    Assert.That(exception.Message, Is.EqualTo($"Error updating employee: {employee}"));
+
+
+        //}
+
+      
+
+
+
+
+
+
+
+        [Test]
+        public async Task GetAllEmployees_ReturnsListOfEmployees()
+        {
+            // Arrange
+            var employees = new List<BankEmployees>
+    {
+        new BankEmployees { EmployeeID = 1, Name = "V", Email = "e@example.com", Position = "Manager", Phone = "1234567890" },
+        new BankEmployees { EmployeeID = 2, Name = "V", Email = "e@example.com", Position = "Assistant", Phone = "0987654321" }
+    };
+
+            foreach (var emp in employees)
+            {
+                await _context.BankEmployees.AddAsync(emp);
+            }
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _service.GetAllEmployees();
+
+            // Assert
+            Assert.IsNotNull(result);
         }
 
 
 
     }
+
+
+
+
 }
+

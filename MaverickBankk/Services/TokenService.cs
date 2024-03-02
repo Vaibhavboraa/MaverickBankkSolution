@@ -1,4 +1,5 @@
-﻿using MaverickBankk.Interfaces;
+﻿using MaverickBankk.Exceptions;
+using MaverickBankk.Interfaces;
 using MaverickBankk.Models.DTOs;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,6 +21,10 @@ namespace MaverickBankk.Services
         public async Task<string> GenerateToken(LoginUserDTO user)
         {
             string token = string.Empty;
+            if ( user.UserType == null)
+            {
+                throw new ValidationNotFoundException("No Email found");
+            }
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.NameId,user.Email),

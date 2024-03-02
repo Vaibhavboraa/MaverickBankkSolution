@@ -27,7 +27,7 @@ namespace Testing
         }
 
         [Test, Order(1)]
-        public async Task GetAllBanksExceptionTest()
+        public void GetAllBanksExceptionTest()
         {
             // Arrange
             var mockBanksRepositoryLogger = new Mock<ILogger<BanksRepository>>();
@@ -58,7 +58,7 @@ namespace Testing
             var allBanks = await banksService.GetAllBanks();
 
             // Assert
-            Assert.AreNotEqual(0, allBanks.Count);
+            Assert.That(allBanks.Count, Is.Not.EqualTo(0));
         }
         [Test, Order(3)]
         public async Task AddBankTest()
@@ -80,7 +80,7 @@ namespace Testing
             var addedBank = await banksService.AddBank(bankToAdd);
 
             // Assert
-            Assert.AreEqual(bankToAdd, addedBank);
+            Assert.That(addedBank, Is.EqualTo(bankToAdd));
         }
         [Test, Order(4)]
         public async Task DeleteBankTest()
@@ -105,7 +105,7 @@ namespace Testing
             var result = await banksService.DeleteBank(bankKeyToDelete);
 
 
-            Assert.AreEqual(deletedBank, result);
+            Assert.That(result, Is.EqualTo(deletedBank));
         }
 
         [Test, Order(5)]
@@ -129,7 +129,7 @@ namespace Testing
             var result = await banksService.GetBank(bankKeyToRetrieve);
 
             // Assert
-            Assert.AreEqual(retrievedBank, result);
+            Assert.That(result, Is.EqualTo(retrievedBank));
         }
 
         [Test, Order(6)]
@@ -163,7 +163,7 @@ namespace Testing
             var updatedBank = await banksService.UpdateBankName(updateBankNameDto);
 
 
-            Assert.AreEqual(updateBankNameDto.BankName, updatedBank.BankName);
+            Assert.That(updatedBank.BankName, Is.EqualTo(updateBankNameDto.BankName));
         }
 
 
@@ -171,6 +171,11 @@ namespace Testing
 
 
     
+
+
+
+
+
 }
 
 }
