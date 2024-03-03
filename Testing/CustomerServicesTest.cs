@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using MaverickBankk.Exceptions;
@@ -106,7 +107,7 @@ namespace Testing
 
             // Assert
             Assert.IsNotNull(result);
-            // Add more assertions based on expected behavior
+          
         }
         [Test]
         public async Task ChangeCustomerName_ValidId_ReturnsUpdatedCustomer()
@@ -187,55 +188,155 @@ namespace Testing
             Assert.IsTrue(result);
 
         }
-        //[Test]
-        //public async Task ChangeCustomerPhoneAsync_CustomerNotFound_ThrowsNoCustomersFoundException()
-        //{
-        //    // Arrange
-        //    int customerId = 1;
-        //    long newPhoneNumber = 9876543210;
+        [Test]
+        public async Task ChangeCustomerPhoneAsync_CustomerNotFound_ThrowsNoCustomersFoundException()
+        {
+            // Arrange
+            int customerId = 1;
+            long newPhoneNumber = 9876543210;
 
-        //    // Ensure that the Get method returns null, simulating a customer not found scenario
-        //    _mockCustomerRepository.Setup(repo => repo.Get(customerId)).ReturnsAsync((Customers)null);
+          
+            _mockCustomerRepository.Setup(repo => repo.Get(customerId)).ReturnsAsync((Customers?)null);
 
-        //    // Act and Assert
-        //    var exception = await Assert.ThrowsAsync<NoCustomersFoundException>(() => _customerServices.ChangeCustomerPhoneAsync(customerId, newPhoneNumber));
+            // Act and Assert
+            // var exception = await Assert.ThrowsAsync<NoCustomersFoundException>(() =>/* _customerServices.ChangeCustomerPhoneAsync(customerId, newPhoneNumber))*/;
+            try { await _customerServices.ChangeCustomerPhoneAsync(customerId, newPhoneNumber); }
+            catch (NoCustomersFoundException)
+            {
+                Assert.IsTrue(true);
+                return;
+            }
+            Assert.Fail("Expected Exception is not thrown NoCustomersFoundException");
+            
+          
+        }
+        [Test]
+        public void ChangeCustomerName_CustomerNotFound_ThrowsNoCustomersFoundException()
+        {
+            // Arrange
+            int customerId = 1;
+            string newName = "John";
 
-        //    // Ensure that the exception message contains the expected customer ID
-        //    Assert.AreEqual($"No customer found with ID {customerId}", exception.Message);
-        //}
+          
+            _mockCustomerRepository.Setup(repo => repo.Get(customerId)).ReturnsAsync((Customers?)null);
+
+            // Act and Assert
+            Assert.ThrowsAsync<NoCustomersFoundException>(() => _customerServices.ChangeCustomerName(customerId, newName));
+        }
+
+        [Test]
+        public void ChangeCustomerAddress_CustomerNotFound_ThrowsNoCustomersFoundException()
+        {
+            // Arrange
+            int customerId = 1;
+            string newAddress = "123 Main St";
+
+          
+            _mockCustomerRepository.Setup(repo => repo.Get(customerId)).ReturnsAsync((Customers?)null);
+
+            // Act and Assert
+            Assert.ThrowsAsync<NoCustomersFoundException>(() => _customerServices.ChangeCustomerAddress(customerId, newAddress));
+        }
+
+        [Test]
+        public void DeleteCustomers_CustomerNotFound_ThrowsNoCustomersFoundException()
+        {
+            // Arrange
+            int customerId = 1;
+
+           
+            _mockCustomerRepository.Setup(repo => repo.Get(customerId)).ReturnsAsync((Customers?)null);
+
+            // Act and Assert
+            Assert.ThrowsAsync<NoCustomersFoundException>(() => _customerServices.DeleteCustomers(customerId));
+        }
+
+        [Test]
+        public void UpdateCustomerPassword_ValidationNotFound_ThrowsValidationNotFoundException()
+        {
+            // Arrange
+            string email = "test@example.com";
+            string newPassword = "newPassword";
+
+          
+            _mockValidationRepository.Setup(repo => repo.Get(email)).ReturnsAsync((Validation?)null);
+
+            // Act and Assert
+            Assert.ThrowsAsync<ValidationNotFoundException>(() => _customerServices.UpdateCustomerPassword(email, newPassword));
+        }
+
+        [Test]
+        public void ResetPassword_PasswordMismatch_ThrowsPasswordMismatchException()
+        {
+            // Arrange
+            string email = "test@example.com";
+            string newPassword = "newPassword";
+            string confirmPassword = "mismatchedPassword";
+
+            // Act and Assert
+            Assert.ThrowsAsync<PasswordMismatchException>(() => _customerServices.ResetPassword(email, newPassword, confirmPassword));
+        }
+
+        [Test]
+        public void ResetPassword_ValidationNotFound_ThrowsValidationNotFoundException()
+        {
+            // Arrange
+            string email = "test@example.com";
+            string newPassword = "newPassword";
+            string confirmPassword = "newPassword";
+
+          
+            _mockValidationRepository.Setup(repo => repo.Get(email)).ReturnsAsync((Validation?)null);
+
+            // Act and Assert
+            Assert.ThrowsAsync<ValidationNotFoundException>(() => _customerServices.ResetPassword(email, newPassword, confirmPassword));
+        }
+        [Test]
+        public async Task GetCustomerInfoByEmail_ValidEmail_ReturnsCustomerInfo()
+        {
+            // Arrange
+            string email = "test@example.com";
+            var validationInfo = new Validation
+            {
+                Email = email,
+                Password = new byte[64],
+                Key = new byte[64],
+                UserType = "Customer",
+                Status = "Active"
+            };
+
+            var allCustomers = new List<Customers>
+    {
+        new Customers { CustomerID = 1, Name = "John", Email = email, PhoneNumber = 1234567890, Address = "123 Main St" },
+        new Customers { CustomerID = 2, Name = "Jane", Email = "jane@example.com", PhoneNumber = 9876543210, Address = "456 Elm St" }
+    };
+
+            _mockValidationRepository.Setup(repo => repo.Get(email)).ReturnsAsync(validationInfo);
+            _mockCustomerRepository.Setup(repo => repo.GetAll()).ReturnsAsync(allCustomers);
+
+            // Act
+            var result = await _customerServices.GetCustomerInfoByEmail(email);
+
+            // Assert
+           
+            Assert.That(result?.Name, Is.EqualTo("John")); 
+        }
+        [Test]
+        public void GetCustomerInfoByEmail_ValidationNotFoundExceptionThrown_ThrowsValidationNotFoundException()
+        {
+            // Arrange
+            string email = "nonexistent@example.com";
+            _mockValidationRepository.Setup(repo => repo.Get(email)).ThrowsAsync(new ValidationNotFoundException("Email not found"));
+
+            // Act and Assert
+            var exception = Assert.Throws<ValidationNotFoundException>(() => _customerServices.GetCustomerInfoByEmail(email).GetAwaiter().GetResult());
+
+            Assert.That(exception.Message, Is.EqualTo("Email not found"));
+        }
+      
 
 
 
-        //[Test]
-        //public async Task Login_ValidUser_ReturnsLoginUserDTO()
-        //{
-        //    // Arrange
-        //    var loginUserDTO = new LoginUserDTO
-        //    {
-        //        Email = "test@example.com",
-        //        Password = "password"
-        //    };
-
-        //    var validation = new Validation
-        //    {
-        //        Email = loginUserDTO.Email,
-        //        Password = new byte[64], // Assuming password is already encrypted
-        //        Key = new byte[64], // Assuming key is already generated
-        //        Status = "Active",
-        //        UserType = "Customer"
-        //    };
-
-        //    _mockValidationRepository.Setup(repo => repo.Get(loginUserDTO.Email)).ReturnsAsync(validation);
-        //    _mockTokenService.Setup(service => service.GenerateToken(loginUserDTO)).ReturnsAsync("sample_token");
-
-        //    // Act
-        //    var result = await _customerServices.Login(loginUserDTO);
-
-        //    // Assert
-        //    Assert.IsNotNull(result);
-
-        //    Assert.IsNotNull(result.Token);
-        //}
 
     }
 

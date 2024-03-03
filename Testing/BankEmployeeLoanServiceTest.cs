@@ -9,6 +9,7 @@ using MaverickBankk.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using MaverickBankk.Exceptions;
 using NUnit.Framework;
 
 namespace MaverickBankk.Tests
@@ -113,6 +114,32 @@ namespace MaverickBankk.Tests
             // Assert
             Assert.That(result, Is.EqualTo(expectedMessage));
         }
+        [Test]
+        public void ReviewLoanApplication_InvalidLoanId_ThrowsLoanNotFoundException()
+        {
+            // Arrange
+            var invalidLoanId = 999;
 
+            _mockLoansRepository.Setup(repo => repo.Get(invalidLoanId)).ReturnsAsync((Loans?)null);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NoLoansFoundException>(async () => await _bankEmployeeLoanService.ReviewLoanApplication(invalidLoanId));
+        }
+        [Test]
+        public void CheckCredit_InvalidAccountId_ReturnsCreditCheckResultDTOWithZeroCredit()
+        {
+            // Arrange
+            var invalidAccountId = 999;
+
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync((List<Transactions>?)null);
+
+            // Act & Assert
+            var exception = Assert.ThrowsAsync<NoTransactionsException>(async () => await _bankEmployeeLoanService.CheckCredit(invalidAccountId));
+            Assert.That(exception.Message, Is.EqualTo($"No transactions found for account ID: {invalidAccountId}"));
+        }
+
+
+
+      
     }
 }

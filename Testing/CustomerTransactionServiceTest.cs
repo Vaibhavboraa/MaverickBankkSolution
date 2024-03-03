@@ -54,7 +54,7 @@ namespace Testing
             // Arrange
             int customerId = 1;
             var depositDTO = new DepositDTO { AccountNumber = 123, Amount = 500 };
-            var unused = _mockAccountsRepository.Setup(repo => repo.Get(depositDTO.AccountNumber)).ReturnsAsync((Accounts)null);
+            var unused = _mockAccountsRepository.Setup(repo => repo.Get(depositDTO.AccountNumber)).ReturnsAsync((Accounts?)null);
 
             // Act
             await _customerTransactionService.Deposit(customerId, depositDTO);
@@ -63,8 +63,7 @@ namespace Testing
             _mockAccountsRepository.Verify(repo => repo.Update(It.IsAny<Accounts>()), Times.Never);
         }
 
-        // Add similar test cases for other methods in CustomerTransactionService
-
+      
         [Test]
         public async Task Withdraw_ValidData_AccountBalanceUpdated()
         {
@@ -87,7 +86,7 @@ namespace Testing
             // Arrange
             int customerId = 1;
             var withdrawalDTO = new WithdrawalDTO { AccountNumber = 123, Amount = 500 };
-            _mockAccountsRepository.Setup(repo => repo.Get(withdrawalDTO.AccountNumber)).ReturnsAsync((Accounts)null);
+            _mockAccountsRepository.Setup(repo => repo.Get(withdrawalDTO.AccountNumber)).ReturnsAsync((Accounts?)null);
 
             // Act
             await _customerTransactionService.Withdraw(customerId, withdrawalDTO);
@@ -112,8 +111,7 @@ namespace Testing
             // Act
             await _customerTransactionService.Transfer(customerId, transferDTO);
 
-            // Assert
-            //Assert.AreEqual(500, sourceAccount.Balance);
+          
             Assert.That(destinationAccount.Balance, Is.EqualTo(1000));
 
         }
@@ -124,7 +122,7 @@ namespace Testing
             // Arrange
             int customerId = 1;
             var transferDTO = new TransferDTO { SourceAccountNumber = 123, DestinationAccountNumber = 456, Amount = 500 };
-            _mockAccountsRepository.Setup(repo => repo.Get(transferDTO.SourceAccountNumber)).ReturnsAsync((Accounts)null);
+            _mockAccountsRepository.Setup(repo => repo.Get(transferDTO.SourceAccountNumber)).ReturnsAsync((Accounts?)null);
 
             // Act
             await _customerTransactionService.Transfer(customerId, transferDTO);
@@ -133,7 +131,7 @@ namespace Testing
             _mockAccountsRepository.Verify(repo => repo.Update(It.IsAny<Accounts>()), Times.Never);
         }
 
-        // Add similar test cases for other methods in CustomerTransactionService
+     
 
     
 
@@ -150,7 +148,7 @@ namespace Testing
             {
                 new Transactions { TransactionID = 1, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddMonths(-1).Date },
                 new Transactions { TransactionID = 2, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddMonths(-1).Date },
-                // Add more transactions
+               
             };
             _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
 
@@ -175,7 +173,7 @@ namespace Testing
             {
                 new Transactions { TransactionID = 1, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-5).Date },
                 new Transactions { TransactionID = 2, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-10).Date },
-                // Add more transactions
+                
             };
             _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
 
@@ -186,9 +184,100 @@ namespace Testing
             CollectionAssert.AreEqual(transactions, result);
         }
 
-      
+        [Test]
+        public void GetLastMonthTransactions_NoTransactionsFound_ThrowsNoTransactionsException()
+        {
+            // Arrange
+            long accountNumber = 123;
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Transactions>());
 
-        // Add similar test cases for other methods in CustomerTransactionService
+            // Act and Assert
+            Assert.ThrowsAsync<NoTransactionsException>(async () => await _customerTransactionService.GetLastMonthTransactions(accountNumber));
+        }
+        [Test]
+        public void GetTransactionsBetweenDates_NoTransactionsFound_ThrowsNoTransactionsException()
+        {
+            // Arrange
+            long accountNumber = 123;
+            var startDate = DateTime.Now.AddMonths(-1);
+            var endDate = DateTime.Now;
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Transactions>());
+
+            // Act and Assert
+            Assert.ThrowsAsync<NoTransactionsException>(async () => await _customerTransactionService.GetTransactionsBetweenDates(accountNumber, startDate, endDate));
+        }
+
+        [Test]
+        public async Task GetTransactionsBetweenDates_ValidData_ReturnsFilteredTransactions()
+        {
+            // Arrange
+            long accountNumber = 123;
+            var startDate = DateTime.Now.AddMonths(-1);
+            var endDate = DateTime.Now;
+            var transactions = new List<Transactions>
+    {
+        new Transactions { TransactionID = 1, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-5).Date },
+        new Transactions { TransactionID = 2, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-10).Date },
+        new Transactions { TransactionID = 3, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-15).Date }
+    };
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
+
+            // Act
+            var result = await _customerTransactionService.GetTransactionsBetweenDates(accountNumber, startDate, endDate);
+
+            // Assert
+            CollectionAssert.AreEqual(transactions, result);
+        }
+
+        [Test]
+        public async Task GetLast10Transactions_ValidAccountNumber_ReturnsLast10Transactions()
+        {
+            // Arrange
+            long accountNumber = 123;
+            var transactions = new List<Transactions>
+        {
+            new Transactions { TransactionID = 1, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-1).Date },
+            new Transactions { TransactionID = 2, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-2).Date },
+           
+        };
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
+
+            // Act
+            var result = await _customerTransactionService.GetLast10Transactions(accountNumber);
+
+            // Assert
+            CollectionAssert.AreEqual(transactions.Take(10).OrderByDescending(t => t.TransactionDate), result);
+        }
+
+        [Test]
+        public void GetLast10Transactions_NoTransactionsFound_ThrowsNoTransactionsException()
+        {
+            // Arrange
+            long accountNumber = 123;
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Transactions>());
+
+            // Act and Assert
+            Assert.ThrowsAsync<NoTransactionsException>(async () => await _customerTransactionService.GetLast10Transactions(accountNumber));
+        }
+
+        [Test]
+        public async Task GetLast10Transactions_LessThan10Transactions_ReturnsAllTransactions()
+        {
+            // Arrange
+            long accountNumber = 123;
+            var transactions = new List<Transactions>
+        {
+            new Transactions { TransactionID = 1, SourceAccountNumber = accountNumber, TransactionDate = DateTime.Now.AddDays(-1).Date },
+            // Add fewer than 10 transactions
+        };
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(transactions);
+
+            // Act
+            var result = await _customerTransactionService.GetLast10Transactions(accountNumber);
+
+            // Assert
+            CollectionAssert.AreEqual(transactions.OrderByDescending(t => t.TransactionDate), result);
+        }
     }
 }
 

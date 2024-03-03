@@ -293,7 +293,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [Authorize(Roles = "Customer")]
+      
         [Route("ResetPassword")]
         [HttpPost]
         public async Task<IActionResult> ResetPassword(string email, string newPassword, string confirmPassword)
@@ -416,7 +416,7 @@ namespace MaverickBankk.Controllers
         }
 
 
-        [Authorize(Roles = "Customer")]
+      
         [Route("UpdatePassword")]
         [HttpPost]
         public async Task<IActionResult> UpdateCustomerPassword(string email, string newPassword)

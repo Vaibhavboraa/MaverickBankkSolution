@@ -158,6 +158,7 @@ namespace MaverickBankk.Controllers
             _bankEmployeeAccountService = bankEmployeeAccountService;
             _logger = logger;
         }
+        [Authorize(Roles = "BankEmployee")]
         [Route(("GetAllCustomer"))]
         [HttpGet]
         public async Task<ActionResult<List<Customers>>> GetCustomers()
@@ -173,6 +174,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [Authorize(Roles = "BankEmployee")]
         [Route("GetCustomerById")]
         [HttpGet]
         public async Task<ActionResult<Customers>> GetCustomerByID(int id)
@@ -196,6 +198,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [Authorize(Roles = "BankEmployee")]
         [Route("ApproveAccountCreation")]
         [HttpPost]
         public async Task<ActionResult<Accounts>> ApproveAccountCreation(long accountNumber)
@@ -219,6 +222,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [Authorize(Roles = "BankEmployee")]
         [Route("ApproveAccountDeletion")]
         [HttpPost]
         public async Task<ActionResult<Accounts>> ApproveAccountDeletion(long accountNumber)
@@ -242,7 +246,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        //[Authorize(Roles ="BankEmployee")]
+        [Authorize(Roles ="BankEmployee")]
         [Route("GetPendingAccounts")]
         [HttpGet]
         public async Task<ActionResult<Accounts>> GetPendingAccounts()
@@ -263,7 +267,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        //[Authorize(Roles = "BankEmployee")]
+        [Authorize(Roles = "BankEmployee")]
         [Route("GetPendingDeletion")]
         [HttpGet]
         public async Task<ActionResult<Accounts>> GetPendingDeletionAccounts()

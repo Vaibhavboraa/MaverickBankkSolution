@@ -3,7 +3,7 @@
 namespace MaverickBankk.Exceptions
 {
     [Serializable]
-    internal class PasswordMismatchException : Exception
+   public class PasswordMismatchException : Exception
     {
         public PasswordMismatchException()
         {

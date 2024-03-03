@@ -58,9 +58,15 @@ namespace Testing
             // Act
             var result = await service.GetTransactionsByAccountNumber(accountNumber);
 
-            // Assert
+            //// Assert
 
-            Assert.IsTrue(result.All(t => t.SourceAccountNumber == accountNumber || t.DestinationAccountNumber == accountNumber));
+          
+            Assert.IsNotNull(result, "Result should not be null");
+
+            if (result != null)
+            {
+                Assert.IsTrue(result.All(t => t.SourceAccountNumber == accountNumber || t.DestinationAccountNumber == accountNumber));
+            }
         }
         [Test]
         public async Task GetTotalInboundTransactions()
@@ -106,9 +112,58 @@ namespace Testing
             // Assert
             Assert.That(result, Is.EqualTo(400));
         }
-     
 
 
+        [Test]
+        public async Task GetAllTransactions_RepositoryReturnsNull_ReturnsNull()
+        {
+            // Arrange
+            var service = new BankEmployeeTransactionService(_mockTransactionsRepository.Object, _mockLogger.Object);
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync((List<Transactions>?)null);
+
+            // Act
+            var result = await service.GetAllTransactions();
+
+            // Assert
+            Assert.IsNull(result, "Result should be null");
+        }
+        [Test]
+        public void GetTransactionsByAccountNumber_NoTransactionsFound_ThrowsBankTransactionServiceException()
+        {
+            // Arrange
+            var accountNumber = 1234567890L;
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Transactions>());
+
+            var service = new BankEmployeeTransactionService(_mockTransactionsRepository.Object, _mockLogger.Object);
+
+            // Act & Assert
+            Assert.ThrowsAsync<BankTransactionServiceException>(() => service.GetTransactionsByAccountNumber(accountNumber));
+        }
+      
+        [Test]
+        public void GetTotalInboundTransactions_NoTransactionsFound_ThrowsNoAccountsFoundException()
+        {
+            // Arrange
+            var accountNumber = 1234567890L;
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Transactions>());
+
+            var service = new BankEmployeeTransactionService(_mockTransactionsRepository.Object, _mockLogger.Object);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NoAccountsFoundException>(() => service.GetTotalInboundTransactions(accountNumber));
+        }
+        [Test]
+        public void GetTotalOutboundTransactions_NoTransactionsFound_ThrowsBankTransactionServiceException()
+        {
+            // Arrange
+            var accountNumber = 1234567890L;
+            _mockTransactionsRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Transactions>());
+
+            var service = new BankEmployeeTransactionService(_mockTransactionsRepository.Object, _mockLogger.Object);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NoAccountsFoundException>(() => service.GetTotalOutboundTransactions(accountNumber));
+        }
     }
 }
 

@@ -5,6 +5,7 @@ using MaverickBankk.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MaverickBankk.Controllers
 {
@@ -153,6 +154,7 @@ namespace MaverickBankk.Controllers
             _bankEmployeeLoanService = bankEmployeeLoanService;
             _logger = logger;
         }
+        [Authorize(Roles = "BankEmployee")]
         [Route("GetAllLoans")]
         [HttpGet]
         public async Task<ActionResult<List<Loans>>> GetAllLoans()
@@ -173,7 +175,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
+        [Authorize(Roles = "BankEmployee")]
         [HttpGet("ReviewLoanApplication/{loanId}")]
         public async Task<ActionResult<Loans>> ReviewLoanApplication(int loanId)
         {
@@ -198,7 +200,7 @@ namespace MaverickBankk.Controllers
         }
 
 
-
+        [Authorize(Roles = "BankEmployee")]
         [HttpGet("check-credit/{accountId}")]
         public async Task<ActionResult<CreditCheckResultDTO>> CheckCredit(long accountId)
         {
@@ -225,7 +227,7 @@ namespace MaverickBankk.Controllers
         }
 
 
-
+        [Authorize(Roles = "BankEmployee")]
         [HttpPost("MakeLoanDecision/{loanId}")]
         public async Task<ActionResult<string>> MakeLoanDecision(int loanId, bool approved)
         {
@@ -246,7 +248,7 @@ namespace MaverickBankk.Controllers
             }
         }
 
-
+        [Authorize(Roles = "BankEmployee")]
         [HttpPost("disburse-loan/{loanId}/{accountId}")]
         public async Task<ActionResult<Accounts>> DisburseLoan(int loanId, long accountId)
         {

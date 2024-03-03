@@ -47,19 +47,8 @@ namespace Testing
             Assert.That(result, Is.EqualTo($"Account with number {accountNumber} is scheduled for deletion."));
         }
 
-        //[Test]
-        //public async Task CloseAccount_InvalidAccountNumber_ThrowsNoAccountsFoundException()
-        //{
-        //    // Arrange
-        //    long accountNumber = 123456789;
-        //    _mockAccountsRepository.Setup(repo => repo.Get(accountNumber)).ReturnsAsync((Accounts)null);
 
-        //    // Act and Assert
-        //    var exception = await Assert.ThrowsAsync<NoAccountsFoundException>(() => _customerAccountService.CloseAccount(accountNumber));
-        //    Assert.AreEqual($"No account found with number: {accountNumber}", exception.Message);
-        //}
-
-        // Add similar test cases for other methods in CustomerAccountService
+        
 
         [Test]
         public async Task GetAccountDetails_ValidAccountNumber_ReturnsAccountDetails()
@@ -77,17 +66,7 @@ namespace Testing
          
         }
 
-        //[Test]
-        //public async Task GetAccountDetails_InvalidAccountNumber_ThrowsNoAccountsFoundException()
-        //{
-        //    // Arrange
-        //    long accountNumber = 123456789;
-        //    _mockAccountsRepository.Setup(repo => repo.Get(accountNumber)).ReturnsAsync((Accounts)null);
-
-        //    // Act and Assert
-        //    var exception = await Assert.ThrowsAsync<NoAccountsFoundException>(() => _customerAccountService.GetAccountDetails(accountNumber));
-        //    Assert.AreEqual($"No account found with number: {accountNumber}", exception.Message);
-        //}
+      
 
         // Add similar test cases for other methods in CustomerAccountService
 
@@ -111,19 +90,9 @@ namespace Testing
           
         }
 
-        //[Test]
-        //public async Task GetAllAccountsByCustomerId_InvalidCustomerId_ThrowsNoCustomersFoundException()
-        //{
-        //    // Arrange
-        //    int customerId = 1;
-        //    _mockAccountsRepository.Setup(repo => repo.GetAll()).ReturnsAsync((List<Accounts>)null);
+     
 
-        //    // Act and Assert
-        //    var exception = await Assert.ThrowsAsync<NoCustomersFoundException>(() => _customerAccountService.GetAllAccountsByCustomerId(customerId));
-        //    Assert.AreEqual($"No customer found with ID: {customerId}", exception.Message);
-        //}
 
-      
 
         [Test]
         public async Task OpenNewAccount_ValidAccountOpeningDTO_ReturnsAddedAccount()
@@ -140,8 +109,44 @@ namespace Testing
             Assert.IsNotNull(result);
          
         }
+        [Test]
+        public void CloseAccount_AccountNotFound_ThrowsNoAccountsFoundException()
+        {
+            // Arrange
+            long accountNumber = 123456789;
+            _mockAccountsRepository.Setup(repo => repo.Get(accountNumber)).ReturnsAsync((Accounts?)null);
 
-       
+            // Act & Assert
+            Assert.ThrowsAsync<NoAccountsFoundException>(() => _customerAccountService.CloseAccount(accountNumber));
+        }
+        [Test]
+        public void GetAccountDetails_AccountNotFound_ThrowsNoAccountsFoundException()
+        {
+            // Arrange
+            long accountNumber = 123456789;
+            _mockAccountsRepository.Setup(repo => repo.Get(accountNumber)).ReturnsAsync((Accounts?)null);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NoAccountsFoundException>(() => _customerAccountService.GetAccountDetails(accountNumber));
+        }
+        [Test]
+        public void GetAllAccountsByCustomerId_NoAccountsFound_ThrowsNoAccountsFoundException()
+        {
+            // Arrange
+            int customerId = 1;
+            _mockAccountsRepository.Setup(repo => repo.GetAll()).ReturnsAsync((List<Accounts>?)null);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NoAccountsFoundException>(() => _customerAccountService.GetAllAccountsByCustomerId(customerId));
+        }
+
+     
+      
+
+
+
+
+
     }
 }
 

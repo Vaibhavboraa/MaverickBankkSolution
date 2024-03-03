@@ -1,6 +1,7 @@
 ﻿using MaverickBankk.Exceptions;
 using MaverickBankk.Interfaces;
 using MaverickBankk.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace MaverickBankk.Controllers
             _logger = logger;
         }
 
-
+        [Authorize(Roles = "BankEmployee")]
         [Route("GetAllTransactions")]
         [HttpGet]
         public async Task<ActionResult<List<Transactions>?>> GetAllTransactions()
@@ -42,6 +43,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [Authorize(Roles = "BankEmployee")]
         [Route("GetTransactionByAccountNumber")]
         [HttpGet]
         public async Task<ActionResult<List<Transactions>?>> GetTransactionsByAccountNumber(long accountNumber)
@@ -67,6 +69,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [Authorize(Roles = "BankEmployee")]
         [Route("TotalInbound")]
         [HttpGet]
         public async Task<ActionResult<double>> GetTotalInboundTransactions(long accountNumber)
@@ -92,6 +95,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [Authorize(Roles = "BankEmployee")]
         [Route("TotalOutbound")]
         [HttpGet]
         public async Task<ActionResult<double>> GetTotalOutboundTransactions(long accountNumber)

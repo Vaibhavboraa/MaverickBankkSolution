@@ -6,6 +6,8 @@ using MaverickBankk.Models;
 using MaverickBankk.Services;
 using Moq;
 using NUnit.Framework;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace MaverickBankk.Tests.Services
 {
@@ -98,6 +100,63 @@ namespace MaverickBankk.Tests.Services
             // Act & Assert
             Assert.ThrowsAsync<InvalidUserException>(() => _bankEmployeeLoginServices.Login(loginUserDTO));
         }
+
+
+        [Test]
+        public void Login_ThrowsDeactivatedUserException()
+        {
+            // Arrange
+            var loginUserDTO = new LoginUserDTO
+            {
+                Email = "deactivated@example.com",
+                Password = "password"
+            };
+
+            var deactivatedValidation = new Validation
+            {
+                Email = "deactivated@example.com",
+                Status = "Deactivated", // Simulating a deactivated user
+                Password = new byte[64],
+                Key = new byte[64]
+            };
+
+            _validationRepositoryMock.Setup(repo => repo.Get(loginUserDTO.Email))
+                .ReturnsAsync(deactivatedValidation);
+
+            // Act & Assert
+            Assert.ThrowsAsync<DeactivatedUserException>(() => _bankEmployeeLoginServices.Login(loginUserDTO));
+        }
+
+     
+
+
+        [Test]
+        public void Login_InvalidUserType_ThrowsInvalidUserException()
+        {
+            // Arrange
+            var loginUserDTO = new LoginUserDTO
+            {
+                Email = "invaliduser@example.com",
+                Password = "password"
+            };
+
+            var invalidUserTypeValidation = new Validation
+            {
+                Email = "invaliduser@example.com",
+                Status = "Active",
+                Password = new byte[64],
+                Key = new byte[64],
+                UserType = null 
+            };
+
+            _validationRepositoryMock.Setup(repo => repo.Get(loginUserDTO.Email))
+                .ReturnsAsync(invalidUserTypeValidation);
+
+            // Act & Assert
+            Assert.ThrowsAsync<InvalidUserException>(() => _bankEmployeeLoginServices.Login(loginUserDTO));
+        }
+      
+
 
 
 

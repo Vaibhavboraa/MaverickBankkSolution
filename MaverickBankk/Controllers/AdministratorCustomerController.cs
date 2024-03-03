@@ -2,6 +2,7 @@
 using MaverickBankk.Interfaces;
 using MaverickBankk.Models;
 using MaverickBankk.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,7 @@ namespace MaverickBankk.Controllers
             _customerManagementService = customerManagementService;
             _logger = logger;
         }
+        [Authorize(Roles = "Admin")]
         [Route("GetAllCustomers")]
         [HttpGet]
         public async Task<ActionResult<Customers>> GetAllUsers()
@@ -38,7 +40,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [Route("GetCustomerById")]
         [HttpGet]
         public async Task<ActionResult<Customers>> GetUser(int id)
@@ -57,6 +59,7 @@ namespace MaverickBankk.Controllers
             }
 
         }
+        [Authorize(Roles = "Admin")]
         [Route("DeactivateCustomer")]
         [HttpPut]
         public async Task<ActionResult<Customers>> DeactivateUser(int customerId)
@@ -80,6 +83,7 @@ namespace MaverickBankk.Controllers
             }
 
         }
+        [Authorize(Roles = "Admin")]
         [Route("ActivateCustomer")]
         [HttpPut]
         public async Task<ActionResult<Customers>> ActivateUser(int customerId)
@@ -107,7 +111,7 @@ namespace MaverickBankk.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         [Route("UpdateCustomerName")]
         [HttpPut]
         public async Task<ActionResult<Customers>> UpdateCustomerName(int customerId, AdminUpdateCustomerNameDTO nameDTO)
@@ -124,7 +128,7 @@ namespace MaverickBankk.Controllers
             }
 
         }
-
+        [Authorize(Roles = "Admin")]
         [Route("UpdateCustomerContact")]
         [HttpPut]
         public async Task<ActionResult<Customers>> UpdateCustomerContact(int customerId, AdminUpdateCustomerContactDTO contactDTO)
@@ -141,7 +145,7 @@ namespace MaverickBankk.Controllers
             }
 
         }
-
+        [Authorize(Roles = "Admin")]
         [Route("UpdateCustomerDetails")]
         [HttpPut]
         public async Task<ActionResult<Customers>> UpdateCustomerDetails(int customerId, AdminUpdateCustomerDetailsDTO detailsDTO)
@@ -158,7 +162,7 @@ namespace MaverickBankk.Controllers
             }
 
         }
-
+        [Authorize(Roles = "Admin")]
         [Route("RegisterCustomer")]
         [HttpPost]
         public async Task<ActionResult<Customers>> CreateCustomer(RegisterCustomerDTO customerDTO)

@@ -182,6 +182,164 @@ namespace MaverickBankk.Services.Tests
             // Assert
             Assert.That(result, Is.EqualTo(pendingDeletionAccounts));
         }
+        [Test]
+        public void GetCustomers_InvalidCustomerId_ThrowsNotFoundException()
+        {
+            // Arrange
+            var invalidCustomerId = 999; // An invalid customer ID
+
+            var customerRepositoryMock = new Mock<IRepository<int, Customers>>();
+            customerRepositoryMock.Setup(repo => repo.Get(invalidCustomerId)).ReturnsAsync((Customers?)null);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                Mock.Of<IRepository<long, Accounts>>(),
+                customerRepositoryMock.Object,
+                loggerMock.Object);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NoCustomersFoundException>(async () => await service.GetCustomers(invalidCustomerId));
+        }
+
+        [Test]
+        public async Task GetCustomersList_NoCustomers_ReturnsEmptyList()
+        {
+            // Arrange
+            var emptyCustomersList = new List<Customers>();
+
+            var customerRepositoryMock = new Mock<IRepository<int, Customers>>();
+            customerRepositoryMock.Setup(repo => repo.GetAll()).ReturnsAsync(emptyCustomersList);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                Mock.Of<IRepository<long, Accounts>>(),
+                customerRepositoryMock.Object,
+                loggerMock.Object);
+
+            // Act
+            var result = await service.GetCustomersListasync();
+
+            // Assert
+            Assert.IsEmpty(result);
+        }
+
+
+     
+
+        [Test]
+        public async Task GetPendingAccounts_NoPendingAccounts_ReturnsEmptyList()
+        {
+            // Arrange
+            var emptyPendingAccountsList = new List<Accounts>();
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.GetAll()).ReturnsAsync(emptyPendingAccountsList);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act
+            var result = await service.GetPendingAccounts();
+
+            // Assert
+            Assert.IsEmpty(result);
+        }
+
+        [Test]
+        public async Task GetPendingDeletionAccounts_NoPendingDeletionAccounts_ReturnsEmptyList()
+        {
+            // Arrange
+            var emptyPendingDeletionAccountsList = new List<Accounts>();
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.GetAll()).ReturnsAsync(emptyPendingDeletionAccountsList);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act
+            var result = await service.GetPendingDeletionAccounts();
+
+            // Assert
+            Assert.IsEmpty(result);
+        }
+
+        [Test]
+        public void GetCustomers_InvalidCustomerId_ThrowsNoCustomersFoundException()
+        {
+            // Arrange
+            var invalidCustomerId = 999; // An invalid customer ID
+
+            var customerRepositoryMock = new Mock<IRepository<int, Customers>>();
+            customerRepositoryMock.Setup(repo => repo.Get(invalidCustomerId)).ReturnsAsync((Customers?)null);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                Mock.Of<IRepository<long, Accounts>>(),
+                customerRepositoryMock.Object,
+                loggerMock.Object);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NoCustomersFoundException>(async () => await service.GetCustomers(invalidCustomerId));
+        }
+
+        [Test]
+        public void GetPendingDeletionAccounts_ErrorFetchingAccounts_ThrowsAccountFetchException()
+        {
+            // Arrange
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.GetAll()).ThrowsAsync(new Exception("Simulated error"));
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act & Assert
+            Assert.ThrowsAsync<AccountFetchException>(async () => await service.GetPendingDeletionAccounts());
+        }
+
+        [Test]
+        public void GetPendingAccounts_ErrorFetchingAccounts_ThrowsAccountFetchException()
+        {
+            // Arrange
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.GetAll()).ThrowsAsync(new Exception("Simulated error"));
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act & Assert
+            Assert.ThrowsAsync<AccountFetchException>(async () => await service.GetPendingAccounts());
+        }
+      
+
+
+
+
+
+
+
+
+
+
 
     }
 }
