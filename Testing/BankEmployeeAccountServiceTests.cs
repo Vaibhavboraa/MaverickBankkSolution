@@ -213,10 +213,9 @@ namespace MaverickBankk.Services.Tests
 
             var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
 
-            var service = new BankEmployeeAccountService(
-                Mock.Of<IRepository<long, Accounts>>(),
-                customerRepositoryMock.Object,
-                loggerMock.Object);
+            var service = new BankEmployeeAccountService(Mock.Of<IRepository<long, Accounts>>(),
+            customerRepositoryMock.Object,
+            loggerMock.Object);
 
             // Act
             var result = await service.GetCustomersListasync();
@@ -329,12 +328,190 @@ namespace MaverickBankk.Services.Tests
             // Act & Assert
             Assert.ThrowsAsync<AccountFetchException>(async () => await service.GetPendingAccounts());
         }
-      
+
+
+
+        [Test]
+        public async Task ApproveAccountDeletion_NonPendingDeletionStatus_ReturnsFalse()
+        {
+            // Arrange
+            var accountNumber = 123456789;
+            var nonPendingDeletionAccount = new Accounts { AccountNumber = accountNumber, Status = "Active" };
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.Get(accountNumber)).ReturnsAsync(nonPendingDeletionAccount);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act
+            var result = await service.ApproveAccountDeletion(accountNumber);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+        [Test]
+        public async Task ApproveAccountDeletion_InvalidAccountNumber_ReturnsFalse()
+        {
+            // Arrange
+            var invalidAccountNumber = 999999999; // An invalid account number
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.Get(invalidAccountNumber)).ReturnsAsync((Accounts?)null);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act
+            var result = await service.ApproveAccountDeletion(invalidAccountNumber);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+        [Test]
+        public void ApproveAccountDeletion_ErrorInRepository_ThrowsAccountApprovalException()
+        {
+            // Arrange
+            var accountNumber = 123456789;
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.Get(accountNumber)).ThrowsAsync(new Exception("Simulated error"));
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act & Assert
+            Assert.ThrowsAsync<AccountApprovalException>(async () => await service.ApproveAccountDeletion(accountNumber));
+        }
+
+        [Test]
+        public void GetPendingAccounts_IncludeNonPendingAccounts_ReturnsOnlyPendingAccounts()
+        {
+            // Arrange
+            var allAccounts = new List<Accounts>
+    {
+        new Accounts { AccountNumber = 1, Status = "Active" },
+        new Accounts { AccountNumber = 2, Status = "Pending" },
+        new Accounts { AccountNumber = 3, Status = "Closed" }
+    };
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.GetAll()).ReturnsAsync(allAccounts);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act
+            var result = service.GetPendingAccounts().Result;
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(1));
+           
+        }
+
+        [Test]
+        public void GetPendingDeletionAccounts_IncludeNonPendingDeletionAccounts_ReturnsOnlyPendingDeletionAccounts()
+        {
+            // Arrange
+            var allAccounts = new List<Accounts>
+    {
+        new Accounts { AccountNumber = 1, Status = "Active" },
+        new Accounts { AccountNumber = 2, Status = "PendingDeletion" },
+        new Accounts { AccountNumber = 3, Status = "Closed" }
+    };
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.GetAll()).ReturnsAsync(allAccounts);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act
+            var result = service.GetPendingDeletionAccounts().Result;
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(1));
+         
+        }
 
 
 
 
+       
 
+        [Test]
+        public async Task GetPendingAccounts_IncludeDifferentStatusAccounts_ReturnsOnlyPendingAccounts()
+        {
+            // Arrange
+            var accountsWithDifferentStatus = new List<Accounts>
+    {
+        new Accounts { AccountNumber = 1, Status = "Active" },
+        new Accounts { AccountNumber = 2, Status = "Pending" },
+        new Accounts { AccountNumber = 3, Status = "Closed" },
+        new Accounts { AccountNumber = 4, Status = "Pending" }
+    };
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.GetAll()).ReturnsAsync(accountsWithDifferentStatus);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act
+            var result = await service.GetPendingAccounts();
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result, Has.All.Property(nameof(Accounts.Status)).EqualTo("Pending"));
+        }
+
+        [Test]
+        public async Task ApproveAccountCreation_NonPendingStatus_ReturnsFalse()
+        {
+            // Arrange
+            var accountNumber = 123456789;
+            var nonPendingAccount = new Accounts { AccountNumber = accountNumber, Status = "Active" };
+
+            var accountsRepositoryMock = new Mock<IRepository<long, Accounts>>();
+            accountsRepositoryMock.Setup(repo => repo.Get(accountNumber)).ReturnsAsync(nonPendingAccount);
+
+            var loggerMock = new Mock<ILogger<BankEmployeeAccountService>>();
+
+            var service = new BankEmployeeAccountService(
+                accountsRepositoryMock.Object,
+                Mock.Of<IRepository<int, Customers>>(),
+                loggerMock.Object);
+
+            // Act
+            var result = await service.ApproveAccountCreation(accountNumber);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
 
 
 

@@ -606,7 +606,7 @@ namespace MaverickBankk.Services
         {
             _logger.LogInformation($"Resetting password for customer with email {email}...");
 
-            // Check if newPassword and confirmPassword match
+           
             if (newPassword != confirmPassword)
             {
                 throw new PasswordMismatchException("New password and confirm password do not match.");
@@ -619,11 +619,11 @@ namespace MaverickBankk.Services
                 throw new ValidationNotFoundException($"Validation not found for email: {email}");
             }
 
-            // Generate a new key and encrypt the new password
+           
             byte[] newKey = GenerateNewKey();
             byte[] encryptedPassword = GetPasswordEncrypted(newPassword, newKey);
 
-            // Update the validation record with the new password and key
+           
             validation.Password = encryptedPassword;
             validation.Key = newKey;
             await _validationRepository.Update(validation);

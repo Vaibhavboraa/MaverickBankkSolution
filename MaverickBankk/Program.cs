@@ -339,7 +339,7 @@ namespace MaverickBankk
             builder.Services.AddScoped<ILoanCustomerService, CustomerLoanService>();
             builder.Services.AddScoped<ITransactionService, CustomerTransactionService>();
             builder.Services.AddScoped<IAccountManagementService, CustomerAccountService>();
-         //   builder.Services.AddScoped<ICustomerBeneficiaryService, CustomerBeneficiaryService>();
+       
             var app = builder.Build();
 
 

@@ -88,7 +88,7 @@ namespace MaverickBankk.Controllers
             _logger = logger;
         }
 
-       // [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [Route("ApplyForLoan")]
         [HttpPost]
         public async Task<IActionResult> ApplyForLoan(LoanApplicationDTO loanApplication)
@@ -109,6 +109,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
+        [Authorize(Roles = "Customer")]
         [Route("AvailedLoans")]
         [HttpGet]
         public async Task<IActionResult> ViewAvailedLoans(int customerId)

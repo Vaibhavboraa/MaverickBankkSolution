@@ -19,7 +19,17 @@ namespace MaverickBankk.Context
         public DbSet<AvailableLoans> AvailableLoans { get; set; }
         public MavericksBankContext(DbContextOptions options) : base(options)
         {
-
+            Validation = Set<Validation>();
+            Customers = Set<Customers>();
+            BankEmployees = Set<BankEmployees>();
+            Admin = Set<Admin>();
+            Banks = Set<Banks>();
+            Branches = Set<Branches>();
+            Accounts = Set<Accounts>();
+            Beneficiaries = Set<Beneficiaries>();
+            Transactions = Set<Transactions>();
+            Loans = Set<Loans>();
+            AvailableLoans = Set<AvailableLoans>();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

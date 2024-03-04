@@ -146,8 +146,8 @@ namespace MaverickBankk.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
-                    AccountNumber = table.Column<long>(type: "bigint", nullable: false),
-                       
+                    AccountNumber = table.Column<long>(type: "bigint", nullable: false)
+                        ,
                     Balance = table.Column<double>(type: "float", nullable: false),
                     AccountType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -189,13 +189,13 @@ namespace MaverickBankk.Migrations
                         column: x => x.IFSC,
                         principalTable: "Branches",
                         principalColumn: "IFSCNumber"
-                   );
+                        );
                     table.ForeignKey(
                         name: "FK_Beneficiaries_Customers_CustomerID",
                         column: x => x.CustomerID,
                         principalTable: "Customers",
                         principalColumn: "CustomerID"
-                       );
+                        );
                 });
 
             migrationBuilder.CreateTable(

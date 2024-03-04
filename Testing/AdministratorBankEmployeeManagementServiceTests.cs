@@ -195,15 +195,15 @@ namespace Testing
                 Phone = "1234567890"
             };
 
-            // Add the employee to the database
+          
             await _context.BankEmployees.AddAsync(employee);
             await _context.SaveChangesAsync();
 
-            // Act: Update the employee's information
+         
             employee.Name = "Updated Name";
             var result = await _service.UpdateEmployee(employee);
 
-            // Retrieve the employee after the update
+            
             var updatedEmployee = await _context.BankEmployees.FindAsync(employee.EmployeeID);
 
             // Assert
@@ -251,10 +251,10 @@ namespace Testing
         {
             // Arrange
             var employees = new List<BankEmployees>
-    {
-        new BankEmployees { EmployeeID = 1, Name = "V", Email = "e@example.com", Position = "Manager", Phone = "1234567890" },
-        new BankEmployees { EmployeeID = 2, Name = "V", Email = "e@example.com", Position = "Assistant", Phone = "0987654321" }
-    };
+        {
+               new BankEmployees { EmployeeID = 1, Name = "V", Email = "e@example.com", Position = "Manager", Phone = "1234567890" },
+               new BankEmployees { EmployeeID = 2, Name = "V", Email = "e@example.com", Position = "Assistant", Phone = "0987654321" }
+        };
 
             foreach (var emp in employees)
             {

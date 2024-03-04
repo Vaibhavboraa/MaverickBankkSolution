@@ -115,7 +115,7 @@ namespace MaverickBankk.Tests.Services
             var deactivatedValidation = new Validation
             {
                 Email = "deactivated@example.com",
-                Status = "Deactivated", // Simulating a deactivated user
+                Status = "Deactivated", 
                 Password = new byte[64],
                 Key = new byte[64]
             };
@@ -155,9 +155,9 @@ namespace MaverickBankk.Tests.Services
             // Act & Assert
             Assert.ThrowsAsync<InvalidUserException>(() => _bankEmployeeLoginServices.Login(loginUserDTO));
         }
+
+
       
-
-
 
 
     }

@@ -139,7 +139,26 @@ namespace MaverickBankk.Tests
         }
 
 
-
       
+
+        [Test]
+        public void DisburseLoan_InvalidAccountId_ThrowsAccountNotFoundException()
+        {
+            // Arrange
+            var validLoanId = 123;
+            var invalidAccountId = 999;
+            var loan = new Loans { LoanID = validLoanId, Status = "Accepted", LoanAmount = 100 };
+
+            _mockLoansRepository.Setup(repo => repo.Get(validLoanId)).ReturnsAsync(loan);
+            _mockAccountsRepository.Setup(repo => repo.Get(invalidAccountId)).ReturnsAsync((Accounts?)null);
+
+            // Act & Assert
+            Assert.ThrowsAsync<NoAccountsFoundException>(async () => await _bankEmployeeLoanService.DisburseLoan(validLoanId, invalidAccountId));
+        }
+
+
+       
+
+
     }
 }

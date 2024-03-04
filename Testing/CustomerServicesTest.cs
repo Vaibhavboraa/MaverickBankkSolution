@@ -335,7 +335,60 @@ namespace Testing
         }
       
 
+        [Test]
+        public void Login_DeactivatedUser_ThrowsDeactivatedUserException()
+        {
+            // Arrange
+            var loginUserDTO = new LoginUserDTO
+            {
+                Email = "deactivated@example.com",
+                Password = "password"
+            };
 
+            var deactivatedUser = new Validation
+            {
+                Email = loginUserDTO.Email,
+                Status = "Deactivated"
+            };
+
+            _mockValidationRepository.Setup(repo => repo.Get(loginUserDTO.Email)).ReturnsAsync(deactivatedUser);
+
+            // Act and Assert
+            Assert.ThrowsAsync<DeactivatedUserException>(() => _customerServices.Login(loginUserDTO));
+        }
+
+
+
+
+        [Test]
+        public void RegisterUserDTO_ValidationRepositoryThrowsException_ThrowsException()
+        {
+            // Arrange
+            var registerDTO = new RegisterCustomerDTO
+            {
+                Email = "error@example.com",
+                Password = "password",
+                UserType = "Customer"
+            };
+
+            _mockValidationRepository.Setup(repo => repo.Add(It.IsAny<Validation>())).ThrowsAsync(new Exception("Validation repository error"));
+
+            // Act and Assert
+            Assert.ThrowsAsync<Exception>(() => _customerServices.Register(registerDTO));
+        }
+
+        [Test]
+        public void ChangeCustomerPhoneAsync_InvalidId_ThrowsNoCustomersFoundException()
+        {
+            // Arrange
+            int invalidCustomerId = -1;
+            long newPhoneNumber = 9876543210;
+
+            // Act and Assert
+            Assert.ThrowsAsync<NoCustomersFoundException>(() => _customerServices.ChangeCustomerPhoneAsync(invalidCustomerId, newPhoneNumber));
+        }
+
+       
 
 
     }

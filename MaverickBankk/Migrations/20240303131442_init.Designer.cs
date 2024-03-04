@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MaverickBankk.Migrations
 {
     [DbContext(typeof(MavericksBankContext))]
-    [Migration("20240301101405_init")]
+    [Migration("20240303131442_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

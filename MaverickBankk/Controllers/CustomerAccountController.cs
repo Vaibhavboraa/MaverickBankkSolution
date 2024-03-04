@@ -137,6 +137,7 @@ namespace MaverickBankk.Controllers
             _accountManagementService = accountManagementService;
             _logger = logger;
         }
+        [Authorize(Roles = "Customer")]
         [Route("Open Account")]
         [HttpPost]
         public async Task<ActionResult<Accounts>> OpenAccount(AccountOpeningDTO accountOpeningDTO)
@@ -152,7 +153,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
+        [Authorize(Roles = "Customer")]
         [Route("Close Account")]
         [HttpPost]
         public async Task<ActionResult<bool>> CloseAccount(long accountNumber)
@@ -171,8 +172,10 @@ namespace MaverickBankk.Controllers
             {
                 _logger.LogError(ex, $"Error closing account with number: {accountNumber}");
                 return StatusCode(500, "Internal server error");
+          
             }
         }
+        [Authorize(Roles = "Customer")]
         [Route("GetAccountDetailsByAccountNumber")]
         [HttpGet]
         public async Task<ActionResult<Accounts>> GetAccountDetails(long accountNumber)
@@ -195,6 +198,7 @@ namespace MaverickBankk.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+      
         [Route("GetAccountDetailsByCustomerId")]
         [HttpGet]
         public async Task<ActionResult<List<Accounts>>> GetAllAccountsByCustomerId(int customerId)
