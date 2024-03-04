@@ -297,25 +297,40 @@ namespace MaverickBankk.Services
                 }
 
 
-                var inboundAmount = transactions
-                    .Where(t => t.SourceAccountNumber == accountId && t.TransactionType == "Credit")
-                    .Sum(t => t.Amount);
+                //var inboundAmount = transactions
+                //    .Where(t => t.SourceAccountNumber == accountId && t.TransactionType == "Credit")
+                //    .Sum(t => t.Amount);
 
 
-                var outboundAmount = transactions
-                    .Where(t => t.SourceAccountNumber == accountId && t.TransactionType == "Debit")
-                    .Sum(t => t.Amount);
+                //var outboundAmount = transactions
+                //    .Where(t => t.SourceAccountNumber == accountId && t.TransactionType == "Debit")
+                //    .Sum(t => t.Amount);
 
-                var creditScore = inboundAmount > outboundAmount ? "Good" : "Bad";
+                //var creditScore = inboundAmount > outboundAmount ? "Good" : "Bad";
+
+                //var result = new CreditCheckResultDTO
+                //{
+                //    InboundAmount = inboundAmount,
+                //    OutboundAmount = outboundAmount,
+                //    CreditScore = creditScore
+                //};
+
+                //return (result);
+                var inboundCount = transactions
+           .Count(t => t.SourceAccountNumber == accountId && t.TransactionType == "Credit");
+
+                var outboundCount = transactions
+                    .Count(t => t.SourceAccountNumber == accountId && t.TransactionType == "Debit");
+
+                var creditScore = inboundCount > outboundCount ? "Good" : "Bad";
 
                 var result = new CreditCheckResultDTO
                 {
-                    InboundAmount = inboundAmount,
-                    OutboundAmount = outboundAmount,
+                    InboundAmount = inboundCount,
+                    OutboundAmount = outboundCount,
                     CreditScore = creditScore
                 };
-
-                return (result);
+                return result;
             }
             catch (Exception ex)
             {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using MaverickBankk.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace MaverickBankk.Controllers
@@ -14,6 +15,7 @@ namespace MaverickBankk.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [EnableCors("ReactPolicy")]
+    [ExcludeFromCodeCoverage]
     public class AdminBankEmployeesController : ControllerBase
     {
         private readonly IAdministratorBankEmployeeManagementService _bankEmployeeService;

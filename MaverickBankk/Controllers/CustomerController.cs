@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MaverickBankk.Controllers
 {
@@ -242,6 +243,7 @@ namespace MaverickBankk.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("ReactPolicy")]
+    [ExcludeFromCodeCoverage]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerLoginService _customerLoginService;

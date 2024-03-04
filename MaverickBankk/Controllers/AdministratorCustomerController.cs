@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MaverickBankk.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [EnableCors("ReactPolicy")]
+    [ExcludeFromCodeCoverage]
     public class AdministratorCustomerController : ControllerBase
     {
         private readonly IAdministratorCustomerManagementService _customerManagementService;

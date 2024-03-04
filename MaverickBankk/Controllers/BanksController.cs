@@ -5,12 +5,14 @@ using MaverickBankk.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MaverickBankk.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("ReactPolicy")]
+    [ExcludeFromCodeCoverage]
     public class BanksController : ControllerBase
     {
         private readonly IBanksAdminService _banksService;

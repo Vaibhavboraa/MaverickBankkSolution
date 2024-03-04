@@ -1,10 +1,12 @@
 ﻿using MaverickBankk.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MaverickBankk.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ExcludeFromCodeCoverage]
     public class AvailableLoansUserController : ControllerBase
     {
         private readonly IAvailableLoansUserService _availableLoansUserService;

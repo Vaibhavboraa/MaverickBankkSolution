@@ -83,9 +83,9 @@ namespace Testing
         public void ViewAvailedLoans_InvalidCustomerId_ThrowsNoCustomersFoundException()
         {
             // Arrange
-            int invalidCustomerId = -1; // Assuming -1 is an invalid ID for demonstration purposes
+            int invalidCustomerId = -1; 
             _mockCustomerRepository.Setup(repo => repo.Get(invalidCustomerId))
-                .ReturnsAsync((Customers)null); // Simulating no customer found
+                .ReturnsAsync((Customers)null); 
 
             // Act & Assert
             var ex = Assert.ThrowsAsync<NoCustomersFoundException>(async () => await _customerLoanService.ViewAvailedLoans(invalidCustomerId));

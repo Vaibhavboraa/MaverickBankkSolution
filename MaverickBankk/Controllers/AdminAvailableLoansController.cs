@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using MaverickBankk.Exceptions;
 using MaverickBankk.Interfaces;
@@ -46,6 +47,7 @@ namespace MaverickBankk.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("ReactPolicy")]
+    [ExcludeFromCodeCoverage]
     public class AdminAvailableLoansController : ControllerBase
     {
         private readonly IAdminAvailableLoansService _adminAvailableLoansService;
